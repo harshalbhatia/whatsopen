@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_by_number"
+        android:icon="@drawable/ic_dialpad"
+        android:title="@string/nav_by_number" />
+
+    <item
+        android:id="@+id/navigation_call_logs"
+        android:icon="@drawable/ic_call_log"
+        android:title="@string/nav_call_logs" />
+
+    <item
+        android:id="@+id/navigation_clipboard"
+        android:icon="@drawable/ic_content_paste"
+        android:title="@string/nav_clipboard" />
+</menu>

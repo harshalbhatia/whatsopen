@@ -133,16 +133,23 @@ class FirstFragment : Fragment() {
 
             if (countryCode.isNotEmpty() && phoneNumber.isNotEmpty()) {
                 val fullNumber = countryCode + phoneNumber
-                try {
-                    // Check if WhatsApp is installed
-                    requireContext().packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+                openInWhatsApp(fullNumber)
+            }
+        }
+    }
 
-                    // Create WhatsApp intent
-                    val uri = Uri.parse("whatsapp://send?phone=$fullNumber")
-                    val intent = Intent(Intent.ACTION_VIEW, uri)
-                    startActivity(intent)
+    private fun openInWhatsApp(number: String) {
+        try {
+            // Try regular WhatsApp first
+            try {
+                requireContext().packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+                openWithPackage(number, "com.whatsapp")
+            } catch (e: PackageManager.NameNotFoundException) {
+                // If regular WhatsApp not found, try WhatsApp Business
+                try {
+                    requireContext().packageManager.getPackageInfo("com.whatsapp.w4b", PackageManager.GET_ACTIVITIES)
+                    openWithPackage(number, "com.whatsapp.w4b")
                 } catch (e: PackageManager.NameNotFoundException) {
-                    // WhatsApp not installed, show error message
                     Toast.makeText(
                         requireContext(),
                         "WhatsApp is not installed on your device",
@@ -150,7 +157,21 @@ class FirstFragment : Fragment() {
                     ).show()
                 }
             }
+        } catch (e: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "Error opening WhatsApp",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+    }
+
+    private fun openWithPackage(number: String, packageName: String) {
+        val uri = Uri.parse("https://api.whatsapp.com/send?phone=$number")
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage(packageName)
+        }
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

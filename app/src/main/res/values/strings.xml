@@ -3,9 +3,6 @@
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">By Number</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
     <string name="enter_phone_number">Enter Phone Number</string>
     <string name="open_in_whatsapp">Start Chat in WhatsApp</string>
     <string name="country_code_hint">Country</string>
@@ -49,4 +46,21 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_by_number">By Number</string>
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_call_logs">Call Logs</string>
+    <string name="nav_clipboard">Clipboard</string>
+
+    <!-- Clipboard Fragment -->
+    <string name="clipboard_title">From Clipboard</string>
+    <string name="clipboard_subtitle">Paste phone numbers separated by new lines, commas, or spaces</string>
+    <string name="clipboard_hint">Paste numbers here</string>
+    <string name="process_numbers">Open in WhatsApp</string>
+
+    <string name="call_logs_subtitle">Open WhatsApp chat with your recent calls</string>
+    <string name="open_chat">Open Chat</string>
+
+    <string name="chat">Chat</string>
 </resources>

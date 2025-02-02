@@ -44,7 +44,7 @@
             app:boxCornerRadiusBottomStart="8dp"
             app:boxCornerRadiusTopEnd="8dp"
             app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/input_stroke_color">
+            app:boxStrokeColor="@color/input_stroke_color_dark">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/country_code_input"
@@ -84,7 +84,7 @@
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusTopEnd="8dp"
         app:boxCornerRadiusTopStart="8dp"
-        app:boxStrokeColor="@color/input_stroke_color"
+        app:boxStrokeColor="@color/input_stroke_color_dark"
         app:helperText="@string/phone_helper_text"
         app:layout_constraintTop_toBottomOf="@id/country_code_container">
 
