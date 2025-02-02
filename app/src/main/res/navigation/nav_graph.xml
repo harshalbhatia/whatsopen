@@ -3,26 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/navigation_by_number">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/navigation_by_number"
         android:name="com.example.whatsopen.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:label="@string/nav_by_number"
+        tools:layout="@layout/fragment_first" />
 
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.whatsopen.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        android:id="@+id/navigation_contacts"
+        android:name="com.example.whatsopen.ContactsFragment"
+        android:label="@string/nav_contacts"
+        tools:layout="@layout/fragment_empty" />
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
+    <fragment
+        android:id="@+id/navigation_call_logs"
+        android:name="com.example.whatsopen.CallLogsFragment"
+        android:label="@string/nav_call_logs"
+        tools:layout="@layout/fragment_empty" />
+
+    <fragment
+        android:id="@+id/navigation_clipboard"
+        android:name="com.example.whatsopen.ClipboardFragment"
+        android:label="@string/nav_clipboard"
+        tools:layout="@layout/fragment_clipboard" />
 </navigation>
