@@ -1,8 +1,5 @@
 package com.example.whatsopen
 
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +26,7 @@ class ClipboardFragment : Fragment() {
 
         binding.processNumbersButton.setOnClickListener {
             val input = binding.numbersInput.text.toString().trim()
-            val numbers = parsePhoneNumbers(input)
+            val numbers = PhoneNumberUtils.parsePhoneNumbers(input)
 
             if (numbers.isEmpty()) {
                 Toast.makeText(context, "No valid phone numbers found", Toast.LENGTH_SHORT).show()
@@ -37,52 +34,8 @@ class ClipboardFragment : Fragment() {
             }
 
             // Process first number
-            openInWhatsApp(numbers.first())
+            WhatsAppLauncher.openChat(requireContext(), numbers.first())
         }
-    }
-
-    private fun parsePhoneNumbers(input: String): List<String> {
-        return input.split("\n", ",", " ")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .map { it.replace(Regex("[^0-9+]"), "") }
-            .filter { it.length >= 10 }
-    }
-
-    private fun openInWhatsApp(number: String) {
-        try {
-            // Try regular WhatsApp first
-            try {
-                requireContext().packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
-                openWithPackage(number, "com.whatsapp")
-            } catch (e: PackageManager.NameNotFoundException) {
-                // If regular WhatsApp not found, try WhatsApp Business
-                try {
-                    requireContext().packageManager.getPackageInfo("com.whatsapp.w4b", PackageManager.GET_ACTIVITIES)
-                    openWithPackage(number, "com.whatsapp.w4b")
-                } catch (e: PackageManager.NameNotFoundException) {
-                    Toast.makeText(
-                        requireContext(),
-                        "WhatsApp is not installed on your device",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "Error opening WhatsApp",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    private fun openWithPackage(number: String, packageName: String) {
-        val uri = Uri.parse("https://api.whatsapp.com/send?phone=$number")
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-            setPackage(packageName)
-        }
-        startActivity(intent)
     }
 
     override fun onDestroyView() {
