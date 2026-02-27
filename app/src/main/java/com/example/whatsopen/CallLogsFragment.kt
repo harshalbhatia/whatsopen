@@ -1,15 +1,18 @@
 package com.example.whatsopen
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -35,7 +38,7 @@ class CallLogsFragment : Fragment() {
         if (isGranted) {
             loadCallLogs()
         } else {
-            Toast.makeText(context, "Permission required to show call logs", Toast.LENGTH_SHORT).show()
+            showPermissionDeniedState()
         }
     }
 
@@ -60,6 +63,18 @@ class CallLogsFragment : Fragment() {
             adapter = this@CallLogsFragment.adapter
         }
 
+        binding.grantPermissionButton.setOnClickListener {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
+            } else {
+                // Permission permanently denied, open app settings
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
+                startActivity(intent)
+            }
+        }
+
         checkPermissionAndLoadLogs()
     }
 
@@ -72,16 +87,33 @@ class CallLogsFragment : Fragment() {
                 loadCallLogs()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG) -> {
-                Toast.makeText(
-                    context,
-                    "Call log permission is needed to show recent calls",
-                    Toast.LENGTH_LONG
-                ).show()
+                showPermissionDeniedState()
             }
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
             }
         }
+    }
+
+    private fun showPermissionDeniedState() {
+        binding.recyclerView.isVisible = false
+        binding.emptyState.isVisible = true
+        binding.emptyStateTitle.text = getString(R.string.empty_call_logs_permission_title)
+        binding.emptyStateDescription.text = getString(R.string.empty_call_logs_permission_description)
+        binding.grantPermissionButton.isVisible = true
+    }
+
+    private fun showEmptyState() {
+        binding.recyclerView.isVisible = false
+        binding.emptyState.isVisible = true
+        binding.emptyStateTitle.text = getString(R.string.empty_call_logs_title)
+        binding.emptyStateDescription.text = getString(R.string.empty_call_logs_description)
+        binding.grantPermissionButton.isVisible = false
+    }
+
+    private fun showCallLogs() {
+        binding.recyclerView.isVisible = true
+        binding.emptyState.isVisible = false
     }
 
     private fun loadCallLogs() {
@@ -108,6 +140,11 @@ class CallLogsFragment : Fragment() {
                 results
             }
             adapter.submitList(callLogs)
+            if (callLogs.isEmpty()) {
+                showEmptyState()
+            } else {
+                showCallLogs()
+            }
         }
     }
 
@@ -151,6 +188,10 @@ class CallLogsAdapter(
             binding.countryCode.text = countryCode
             binding.phoneNumber.text = phoneNumber
             binding.callDate.text = dateFormat.format(Date(item.date))
+
+            binding.root.contentDescription =
+                "Call from $countryCode $phoneNumber, ${binding.callDate.text}"
+
             binding.openChatButton.setOnClickListener {
                 onItemClick(item.number)
             }

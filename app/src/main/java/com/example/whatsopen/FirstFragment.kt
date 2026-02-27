@@ -3,21 +3,16 @@ package com.example.whatsopen
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import androidx.fragment.app.Fragment
 import com.example.whatsopen.databinding.FragmentFirstBinding
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -31,7 +26,6 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ensure the country code always starts with +
         binding.countryCodeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -41,26 +35,54 @@ class FirstFragment : Fragment() {
                     binding.countryCodeInput.setSelection(binding.countryCodeInput.text?.length ?: 0)
                 }
 
-                // Update country flag and name
                 val numericCode = s.toString().replace("+", "")
                 val countryInfo = COUNTRY_DATA[numericCode]
                 (binding.countryCodeInputLayout as CountryCodeTextInputLayout)
                     .setCountryInfo(countryInfo?.flag, countryInfo?.name)
+
+                binding.countryCodeInputLayout.error = null
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        binding.openWhatsappButton.setOnClickListener {
-            val countryCode = binding.countryCodeInput.text.toString().trim()
-                .replace(Regex("[^0-9+]"), "") // Remove non-numeric characters except +
-                .replace("+", "") // Remove + for the API call
-            val phoneNumber = binding.phoneInput.text.toString().trim()
-                .replace(Regex("[^0-9]"), "") // Remove non-numeric characters
+        binding.phoneInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.phoneInputLayout.error = null
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
-            if (countryCode.isNotEmpty() && phoneNumber.isNotEmpty()) {
-                val fullNumber = countryCode + phoneNumber
-                WhatsAppLauncher.openChat(requireContext(), fullNumber)
+        binding.phoneInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                binding.openWhatsappButton.performClick()
+                true
+            } else false
+        }
+
+        binding.openWhatsappButton.setOnClickListener {
+            binding.countryCodeInputLayout.error = null
+            binding.phoneInputLayout.error = null
+
+            val countryCode = binding.countryCodeInput.text.toString().trim()
+                .replace(Regex("[^0-9+]"), "")
+                .replace("+", "")
+            val phoneNumber = binding.phoneInput.text.toString().trim()
+                .replace(Regex("[^0-9]"), "")
+
+            var hasError = false
+            if (countryCode.isEmpty()) {
+                binding.countryCodeInputLayout.error = getString(R.string.error_country_code_required)
+                hasError = true
+            }
+            if (phoneNumber.isEmpty()) {
+                binding.phoneInputLayout.error = getString(R.string.error_phone_required)
+                hasError = true
+            }
+
+            if (!hasError) {
+                WhatsAppLauncher.openChat(requireContext(), countryCode + phoneNumber)
             }
         }
     }

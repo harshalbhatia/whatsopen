@@ -1,111 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/first_fragment_label"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/subtitle"
-        android:textColor="?android:textColorSecondary"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-
-    <LinearLayout
-        android:id="@+id/country_code_container"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/subtitle">
-
-        <com.example.whatsopen.CountryCodeTextInputLayout
-            android:id="@+id/country_code_input_layout"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/country_code_hint"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/input_stroke_color_dark">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/country_code_input"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:inputType="phone"
-                android:maxLength="4"
-                android:text="+"
-                android:textAlignment="viewStart" />
-
-        </com.example.whatsopen.CountryCodeTextInputLayout>
+        android:padding="@dimen/screen_padding">
 
         <TextView
-            android:id="@+id/country_info"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:alpha="1.0"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:gravity="start|center_vertical"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/first_fragment_label"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_title_subtitle"
+            android:text="@string/subtitle"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="?android:textColorSecondary"
-            android:textSize="16sp"
-            android:translationY="-2dp"
-            android:baselineAligned="true" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/phone_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="@string/phone_number_hint"
-        app:boxCornerRadiusBottomEnd="8dp"
-        app:boxCornerRadiusBottomStart="8dp"
-        app:boxCornerRadiusTopEnd="8dp"
-        app:boxCornerRadiusTopStart="8dp"
-        app:boxStrokeColor="@color/input_stroke_color_dark"
-        app:helperText="@string/phone_helper_text"
-        app:layout_constraintTop_toBottomOf="@id/country_code_container">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/phone_input"
+        <LinearLayout
+            android:id="@+id/country_code_container"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:inputType="phone" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_subtitle_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/subtitle">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.example.whatsopen.CountryCodeTextInputLayout
+                android:id="@+id/country_code_input_layout"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/country_code_hint"
+                app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
+                app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
+                app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
+                app:boxCornerRadiusTopStart="@dimen/corner_radius_input">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/open_whatsapp_button"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/open_in_whatsapp"
-        android:textAllCaps="false"
-        app:cornerRadius="8dp"
-        android:contentDescription="@string/open_in_whatsapp"
-        app:icon="@drawable/ic_whatsapp"
-        app:layout_constraintTop_toBottomOf="@id/phone_input_layout" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/country_code_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/input_height"
+                    android:imeOptions="actionNext"
+                    android:inputType="phone"
+                    android:maxLength="4"
+                    android:nextFocusDown="@id/phone_input"
+                    android:text="+"
+                    android:textAlignment="viewStart" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </com.example.whatsopen.CountryCodeTextInputLayout>
+
+            <TextView
+                android:id="@+id/country_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:maxLines="1"
+                android:contentDescription="@string/country_info_description"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?android:textColorSecondary" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/phone_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_between_inputs"
+            android:hint="@string/phone_number_hint"
+            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
+            app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
+            app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
+            app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
+            app:helperText="@string/phone_helper_text"
+            app:layout_constraintTop_toBottomOf="@id/country_code_container">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phone_input"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:imeOptions="actionGo"
+                android:inputType="phone" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/open_whatsapp_button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/spacing_input_button"
+            android:contentDescription="@string/open_in_whatsapp"
+            android:text="@string/open_in_whatsapp"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/corner_radius_input"
+            app:icon="@drawable/ic_whatsapp"
+            app:layout_constraintTop_toBottomOf="@id/phone_input_layout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

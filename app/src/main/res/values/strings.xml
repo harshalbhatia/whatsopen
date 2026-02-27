@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">WhatsOpen</string>
-    <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">By Number</string>
     <string name="enter_phone_number">Enter Phone Number</string>
@@ -12,17 +11,33 @@
 
     <!-- Bottom Navigation -->
     <string name="nav_by_number">By Number</string>
-<string name="nav_call_logs">Call Logs</string>
+    <string name="nav_call_logs">Call Logs</string>
     <string name="nav_clipboard">Clipboard</string>
 
     <!-- Clipboard Fragment -->
     <string name="clipboard_title">From Clipboard</string>
-    <string name="clipboard_subtitle">Paste phone numbers separated by new lines, commas, or spaces</string>
+    <string name="clipboard_subtitle">Paste a phone number to start a WhatsApp chat</string>
     <string name="clipboard_hint">Paste numbers here</string>
+    <string name="clipboard_helper_text">Example: +1 555-123-4567</string>
     <string name="process_numbers">Open in WhatsApp</string>
 
+    <!-- Call Logs Fragment -->
     <string name="call_logs_subtitle">Open WhatsApp chat with your recent calls</string>
     <string name="open_chat">Open Chat</string>
-
     <string name="chat">Chat</string>
+
+    <!-- Empty States -->
+    <string name="empty_call_logs_title">No recent calls</string>
+    <string name="empty_call_logs_description">Your recent calls will appear here</string>
+    <string name="empty_call_logs_permission_title">Permission required</string>
+    <string name="empty_call_logs_permission_description">Allow access to call logs to see your recent calls</string>
+    <string name="grant_permission">Grant Permission</string>
+
+    <!-- Validation Errors -->
+    <string name="error_country_code_required">Enter a country code</string>
+    <string name="error_phone_required">Enter a phone number</string>
+    <string name="error_no_valid_numbers">No valid phone numbers found</string>
+
+    <!-- Accessibility -->
+    <string name="country_info_description">Country information for entered code</string>
 </resources>

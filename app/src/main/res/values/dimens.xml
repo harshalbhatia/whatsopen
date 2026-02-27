@@ -1,3 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <!-- Screen layout -->
+    <dimen name="screen_padding">24dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_title_subtitle">8dp</dimen>
+    <dimen name="spacing_subtitle_content">32dp</dimen>
+    <dimen name="spacing_between_inputs">16dp</dimen>
+    <dimen name="spacing_input_button">24dp</dimen>
+
+    <!-- Component sizes -->
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="input_height">56dp</dimen>
+
+    <!-- Corner radii -->
+    <dimen name="corner_radius_input">8dp</dimen>
+    <dimen name="corner_radius_card">12dp</dimen>
+
+    <!-- Card layout -->
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin_vertical">6dp</dimen>
+
+    <!-- CountryCodeTextInputLayout -->
+    <dimen name="country_flag_text_size">18sp</dimen>
+    <dimen name="country_name_text_size">14sp</dimen>
+    <dimen name="country_code_padding_start">70dp</dimen>
 </resources>

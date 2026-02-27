@@ -2,6 +2,32 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="input_stroke_color">#E0E0E0</color>
-    <color name="purple_500">#6750A4</color>
+
+    <!-- Material3 Light Theme - WhatsApp Green Palette -->
+    <color name="md_theme_light_primary">#006B5E</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#74F8DC</color>
+    <color name="md_theme_light_onPrimaryContainer">#00201B</color>
+    <color name="md_theme_light_secondary">#4B635C</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#CDE8DF</color>
+    <color name="md_theme_light_onSecondaryContainer">#07201A</color>
+    <color name="md_theme_light_tertiary">#416278</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#C5E7FF</color>
+    <color name="md_theme_light_onTertiaryContainer">#001E2F</color>
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
+    <color name="md_theme_light_background">#FAFDFB</color>
+    <color name="md_theme_light_onBackground">#191C1B</color>
+    <color name="md_theme_light_surface">#FAFDFB</color>
+    <color name="md_theme_light_onSurface">#191C1B</color>
+    <color name="md_theme_light_surfaceVariant">#DAE5E0</color>
+    <color name="md_theme_light_onSurfaceVariant">#3F4945</color>
+    <color name="md_theme_light_outline">#6F7975</color>
+    <color name="md_theme_light_outlineVariant">#BEC9C4</color>
+    <color name="md_theme_light_surfaceContainer">#EEF1EF</color>
+    <color name="md_theme_light_surfaceContainerHigh">#E8EBE9</color>
 </resources>
