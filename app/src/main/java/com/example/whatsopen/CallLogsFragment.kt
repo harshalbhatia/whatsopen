@@ -1,9 +1,7 @@
 package com.example.whatsopen
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
@@ -13,10 +11,16 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.whatsopen.databinding.FragmentCallLogsBinding
 import com.example.whatsopen.databinding.ItemCallLogBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,7 +52,7 @@ class CallLogsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = CallLogsAdapter { number ->
-            openInWhatsApp(number)
+            WhatsAppLauncher.openChat(requireContext(), number)
         }
 
         binding.recyclerView.apply {
@@ -68,7 +72,6 @@ class CallLogsFragment : Fragment() {
                 loadCallLogs()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG) -> {
-                // Show explanation if needed
                 Toast.makeText(
                     context,
                     "Call log permission is needed to show recent calls",
@@ -82,59 +85,30 @@ class CallLogsFragment : Fragment() {
     }
 
     private fun loadCallLogs() {
-        val callLogs = mutableListOf<CallLogItem>()
-        requireContext().contentResolver.query(
-            CallLog.Calls.CONTENT_URI,
-            arrayOf(
-                CallLog.Calls.NUMBER,
-                CallLog.Calls.DATE,
-                CallLog.Calls.TYPE
-            ),
-            null,
-            null,
-            "${CallLog.Calls.DATE} DESC"
-        )?.use { cursor ->
-            while (cursor.moveToNext()) {
-                val number = cursor.getString(0)
-                val date = cursor.getLong(1)
-                callLogs.add(CallLogItem(number, date))
-            }
-        }
-        adapter.submitList(callLogs)
-    }
-
-    private fun openInWhatsApp(number: String) {
-        try {
-            try {
-                requireContext().packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
-                openWithPackage(number, "com.whatsapp")
-            } catch (e: PackageManager.NameNotFoundException) {
-                try {
-                    requireContext().packageManager.getPackageInfo("com.whatsapp.w4b", PackageManager.GET_ACTIVITIES)
-                    openWithPackage(number, "com.whatsapp.w4b")
-                } catch (e: PackageManager.NameNotFoundException) {
-                    Toast.makeText(
-                        requireContext(),
-                        "WhatsApp is not installed on your device",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val callLogs = withContext(Dispatchers.IO) {
+                val results = mutableListOf<CallLogItem>()
+                requireContext().contentResolver.query(
+                    CallLog.Calls.CONTENT_URI,
+                    arrayOf(
+                        CallLog.Calls.NUMBER,
+                        CallLog.Calls.DATE,
+                        CallLog.Calls.TYPE
+                    ),
+                    null,
+                    null,
+                    "${CallLog.Calls.DATE} DESC"
+                )?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val number = cursor.getString(0)
+                        val date = cursor.getLong(1)
+                        results.add(CallLogItem(number, date))
+                    }
                 }
+                results
             }
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "Error opening WhatsApp",
-                Toast.LENGTH_SHORT
-            ).show()
+            adapter.submitList(callLogs)
         }
-    }
-
-    private fun openWithPackage(number: String, packageName: String) {
-        val uri = Uri.parse("https://api.whatsapp.com/send?phone=$number")
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-            setPackage(packageName)
-        }
-        startActivity(intent)
     }
 
     override fun onDestroyView() {
@@ -150,14 +124,8 @@ data class CallLogItem(
 
 class CallLogsAdapter(
     private val onItemClick: (String) -> Unit
-) : RecyclerView.Adapter<CallLogsAdapter.ViewHolder>() {
-    private var items = listOf<CallLogItem>()
+) : ListAdapter<CallLogItem, CallLogsAdapter.ViewHolder>(CallLogDiffCallback()) {
     private val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-
-    fun submitList(newItems: List<CallLogItem>) {
-        items = newItems
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemCallLogBinding.inflate(
@@ -169,21 +137,16 @@ class CallLogsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item)
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount() = items.size
 
     inner class ViewHolder(
         private val binding: ItemCallLogBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: CallLogItem) {
-            // Split the number into country code and number
             val number = item.number.trim()
-            val countryCode = number.substring(0, number.length - 10)
-            val phoneNumber = number.substring(number.length - 10)
+            val (countryCode, phoneNumber) = PhoneNumberUtils.splitPhoneNumber(number)
 
             binding.countryCode.text = countryCode
             binding.phoneNumber.text = phoneNumber
@@ -192,5 +155,15 @@ class CallLogsAdapter(
                 onItemClick(item.number)
             }
         }
+    }
+}
+
+class CallLogDiffCallback : DiffUtil.ItemCallback<CallLogItem>() {
+    override fun areItemsTheSame(oldItem: CallLogItem, newItem: CallLogItem): Boolean {
+        return oldItem.number == newItem.number && oldItem.date == newItem.date
+    }
+
+    override fun areContentsTheSame(oldItem: CallLogItem, newItem: CallLogItem): Boolean {
+        return oldItem == newItem
     }
 }
