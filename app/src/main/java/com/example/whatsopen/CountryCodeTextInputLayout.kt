@@ -2,6 +2,7 @@ package com.example.whatsopen
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -16,14 +17,22 @@ class CountryCodeTextInputLayout @JvmOverloads constructor(
 ) : TextInputLayout(context, attrs, defStyleAttr) {
 
     private val flagTextView: TextView = TextView(context).apply {
-        textSize = 18f
+        setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            resources.getDimension(R.dimen.country_flag_text_size)
+        )
         gravity = Gravity.CENTER_VERTICAL
     }
 
     private val countryNameTextView: TextView = TextView(context).apply {
-        textSize = 14f
+        setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            resources.getDimension(R.dimen.country_name_text_size)
+        )
         gravity = Gravity.CENTER_VERTICAL
-        setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+        setTextColor(ContextCompat.getColor(context, typedValue.resourceId))
     }
 
     private val container = LinearLayout(context).apply {
@@ -34,9 +43,8 @@ class CountryCodeTextInputLayout @JvmOverloads constructor(
 
     init {
         addView(container)
-        // Set consistent padding from the start
         editText?.setPadding(
-            70.toPx,  // Fixed left padding
+            resources.getDimensionPixelSize(R.dimen.country_code_padding_start),
             editText?.paddingTop ?: 0,
             editText?.paddingRight ?: 0,
             editText?.paddingBottom ?: 0
@@ -44,12 +52,8 @@ class CountryCodeTextInputLayout @JvmOverloads constructor(
     }
 
     fun setCountryInfo(flag: String?, countryName: String?) {
-        // Find the country_info TextView in the parent view
         (parent?.parent as? ViewGroup)?.findViewById<TextView>(R.id.country_info)?.apply {
             text = if (flag != null && countryName != null) "$flag  $countryName" else null
         }
     }
-
-    private val Int.toPx: Int
-        get() = (this * context.resources.displayMetrics.density).toInt()
 }
