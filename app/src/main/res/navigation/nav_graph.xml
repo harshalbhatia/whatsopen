@@ -12,16 +12,10 @@
         tools:layout="@layout/fragment_first" />
 
     <fragment
-        android:id="@+id/navigation_contacts"
-        android:name="com.example.whatsopen.ContactsFragment"
-        android:label="@string/nav_contacts"
-        tools:layout="@layout/fragment_empty" />
-
-    <fragment
         android:id="@+id/navigation_call_logs"
         android:name="com.example.whatsopen.CallLogsFragment"
         android:label="@string/nav_call_logs"
-        tools:layout="@layout/fragment_empty" />
+        tools:layout="@layout/fragment_call_logs" />
 
     <fragment
         android:id="@+id/navigation_clipboard"

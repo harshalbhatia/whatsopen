@@ -63,7 +63,7 @@
             android:layout_height="56dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:alpha="0.7"
+            android:alpha="1.0"
             android:ellipsize="end"
             android:maxLines="1"
             android:gravity="start|center_vertical"
@@ -104,6 +104,7 @@
         android:text="@string/open_in_whatsapp"
         android:textAllCaps="false"
         app:cornerRadius="8dp"
+        android:contentDescription="@string/open_in_whatsapp"
         app:icon="@drawable/ic_whatsapp"
         app:layout_constraintTop_toBottomOf="@id/phone_input_layout" />
 
