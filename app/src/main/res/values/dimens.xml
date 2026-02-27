@@ -17,6 +17,11 @@
     <dimen name="corner_radius_input">8dp</dimen>
     <dimen name="corner_radius_card">12dp</dimen>
 
+    <!-- Filter chips -->
+    <dimen name="spacing_subtitle_filters">16dp</dimen>
+    <dimen name="spacing_filters_content">16dp</dimen>
+    <dimen name="chip_spacing">8dp</dimen>
+
     <!-- Card layout -->
     <dimen name="card_padding">16dp</dimen>
     <dimen name="card_margin_vertical">6dp</dimen>

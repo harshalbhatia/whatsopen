@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,12 @@ class CallLogsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: CallLogsAdapter
 
+    private var allCallLogs: List<CallLogItem> = emptyList()
+    private var selectedCallType: Int? = null
+    private var selectedContactFilter: ContactFilter = ContactFilter.ALL
+
+    private enum class ContactFilter { ALL, CONTACTS_ONLY, NON_CONTACTS_ONLY }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -39,6 +46,15 @@ class CallLogsFragment : Fragment() {
             loadCallLogs()
         } else {
             showPermissionDeniedState()
+        }
+    }
+
+    private val requestContactsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            enableContactFilterChips()
+            loadCallLogs()
         }
     }
 
@@ -63,11 +79,42 @@ class CallLogsFragment : Fragment() {
             adapter = this@CallLogsFragment.adapter
         }
 
+        binding.callTypeChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            selectedCallType = when {
+                checkedIds.contains(R.id.chip_incoming) -> CallLog.Calls.INCOMING_TYPE
+                checkedIds.contains(R.id.chip_outgoing) -> CallLog.Calls.OUTGOING_TYPE
+                checkedIds.contains(R.id.chip_missed) -> CallLog.Calls.MISSED_TYPE
+                else -> null
+            }
+            applyFilters()
+        }
+
+        binding.contactStatusChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            selectedContactFilter = when {
+                checkedIds.contains(R.id.chip_contacts_only) -> ContactFilter.CONTACTS_ONLY
+                checkedIds.contains(R.id.chip_non_contacts_only) -> ContactFilter.NON_CONTACTS_ONLY
+                else -> ContactFilter.ALL
+            }
+            applyFilters()
+        }
+
+        updateContactChipsState()
+
+        binding.chipContactsOnly.setOnClickListener {
+            if (!hasContactsPermission()) {
+                requestContactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+        }
+        binding.chipNonContactsOnly.setOnClickListener {
+            if (!hasContactsPermission()) {
+                requestContactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+        }
+
         binding.grantPermissionButton.setOnClickListener {
             if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
             } else {
-                // Permission permanently denied, open app settings
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", requireContext().packageName, null)
                 }
@@ -95,8 +142,32 @@ class CallLogsFragment : Fragment() {
         }
     }
 
+    private fun hasContactsPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.READ_CONTACTS
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun updateContactChipsState() {
+        val hasPermission = hasContactsPermission()
+        binding.chipContactsOnly.isEnabled = hasPermission
+        binding.chipNonContactsOnly.isEnabled = hasPermission
+        if (!hasPermission) {
+            binding.chipAllContacts.isChecked = true
+            selectedContactFilter = ContactFilter.ALL
+        }
+    }
+
+    private fun enableContactFilterChips() {
+        binding.chipContactsOnly.isEnabled = true
+        binding.chipNonContactsOnly.isEnabled = true
+    }
+
     private fun showPermissionDeniedState() {
         binding.recyclerView.isVisible = false
+        binding.callTypeFilterScroll.isVisible = false
+        binding.contactFilterScroll.isVisible = false
         binding.emptyState.isVisible = true
         binding.emptyStateTitle.text = getString(R.string.empty_call_logs_permission_title)
         binding.emptyStateDescription.text = getString(R.string.empty_call_logs_permission_description)
@@ -111,15 +182,74 @@ class CallLogsFragment : Fragment() {
         binding.grantPermissionButton.isVisible = false
     }
 
+    private fun showFilteredEmptyState() {
+        binding.recyclerView.isVisible = false
+        binding.emptyState.isVisible = true
+        binding.emptyStateTitle.text = getString(R.string.empty_filtered_call_logs_title)
+        binding.emptyStateDescription.text = getString(R.string.empty_filtered_call_logs_description)
+        binding.grantPermissionButton.isVisible = false
+    }
+
     private fun showCallLogs() {
         binding.recyclerView.isVisible = true
         binding.emptyState.isVisible = false
     }
 
+    private fun applyFilters() {
+        val filtered = allCallLogs.filter { item ->
+            val matchesType = selectedCallType == null || item.callType == selectedCallType
+            val matchesContact = when (selectedContactFilter) {
+                ContactFilter.ALL -> true
+                ContactFilter.CONTACTS_ONLY -> item.isContact
+                ContactFilter.NON_CONTACTS_ONLY -> !item.isContact
+            }
+            matchesType && matchesContact
+        }
+
+        adapter.submitList(filtered)
+
+        if (filtered.isEmpty() && allCallLogs.isNotEmpty()) {
+            showFilteredEmptyState()
+        } else if (filtered.isEmpty()) {
+            showEmptyState()
+        } else {
+            showCallLogs()
+        }
+    }
+
+    private fun lookupContactNumbers(numbers: Set<String>): Set<String> {
+        val contactNumbers = mutableSetOf<String>()
+        for (number in numbers) {
+            val lookupUri = Uri.withAppendedPath(
+                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(number)
+            )
+            try {
+                requireContext().contentResolver.query(
+                    lookupUri,
+                    arrayOf(ContactsContract.PhoneLookup._ID),
+                    null,
+                    null,
+                    null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        contactNumbers.add(number)
+                    }
+                }
+            } catch (_: Exception) {
+                // SecurityException if permission revoked, or other errors
+            }
+        }
+        return contactNumbers
+    }
+
     private fun loadCallLogs() {
+        binding.callTypeFilterScroll.isVisible = true
+        binding.contactFilterScroll.isVisible = true
+
         viewLifecycleOwner.lifecycleScope.launch {
             val callLogs = withContext(Dispatchers.IO) {
-                val results = mutableListOf<CallLogItem>()
+                val results = mutableListOf<Triple<String, Long, Int>>()
                 requireContext().contentResolver.query(
                     CallLog.Calls.CONTENT_URI,
                     arrayOf(
@@ -134,17 +264,30 @@ class CallLogsFragment : Fragment() {
                     while (cursor.moveToNext()) {
                         val number = cursor.getString(0)
                         val date = cursor.getLong(1)
-                        results.add(CallLogItem(number, date))
+                        val type = cursor.getInt(2)
+                        results.add(Triple(number, date, type))
                     }
                 }
-                results
+
+                val contactNumbers = if (hasContactsPermission()) {
+                    val uniqueNumbers = results.map { it.first }.toSet()
+                    lookupContactNumbers(uniqueNumbers)
+                } else {
+                    emptySet()
+                }
+
+                results.map { (number, date, type) ->
+                    CallLogItem(
+                        number = number,
+                        date = date,
+                        callType = type,
+                        isContact = number in contactNumbers
+                    )
+                }
             }
-            adapter.submitList(callLogs)
-            if (callLogs.isEmpty()) {
-                showEmptyState()
-            } else {
-                showCallLogs()
-            }
+
+            allCallLogs = callLogs
+            applyFilters()
         }
     }
 
@@ -156,7 +299,9 @@ class CallLogsFragment : Fragment() {
 
 data class CallLogItem(
     val number: String,
-    val date: Long
+    val date: Long,
+    val callType: Int,
+    val isContact: Boolean
 )
 
 class CallLogsAdapter(
@@ -189,8 +334,18 @@ class CallLogsAdapter(
             binding.phoneNumber.text = phoneNumber
             binding.callDate.text = dateFormat.format(Date(item.date))
 
+            val (iconRes, descriptionRes) = when (item.callType) {
+                CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_incoming to R.string.call_type_incoming
+                CallLog.Calls.OUTGOING_TYPE -> R.drawable.ic_call_outgoing to R.string.call_type_outgoing
+                CallLog.Calls.MISSED_TYPE -> R.drawable.ic_call_missed to R.string.call_type_missed
+                else -> R.drawable.ic_call_incoming to R.string.call_type_incoming
+            }
+            binding.callTypeIcon.setImageResource(iconRes)
+            binding.callTypeIcon.contentDescription = binding.root.context.getString(descriptionRes)
+
+            val typeDesc = binding.root.context.getString(descriptionRes)
             binding.root.contentDescription =
-                "Call from $countryCode $phoneNumber, ${binding.callDate.text}"
+                "$typeDesc from $countryCode $phoneNumber, ${binding.callDate.text}"
 
             binding.openChatButton.setOnClickListener {
                 onItemClick(item.number)
