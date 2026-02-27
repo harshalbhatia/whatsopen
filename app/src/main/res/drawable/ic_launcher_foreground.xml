@@ -3,12 +3,20 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Green speech bubble -->
+    <!-- White speech bubble outline -->
     <path
-        android:fillColor="#25D366"
-        android:pathData="M54,24 C40,24 28,35 28,49 C28,56 31,62 36,67 L32,79 L45,73 C48,74 51,75 54,75 C68,75 80,64 80,49 C80,35 68,24 54,24 Z" />
-    <!-- White arrow -->
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M55,22 A24,24 0 1 1 43,67 L30,82 L34,58 A24,24 0 0 1 55,22 Z" />
+    <!-- White chevron arrow -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M45,39 L45,59 L67,49 Z" />
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M49,36 L62,46 L49,56" />
 </vector>
