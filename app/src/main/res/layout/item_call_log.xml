@@ -16,13 +16,24 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/card_padding">
 
+        <ImageView
+            android:id="@+id/call_type_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="@id/country_code"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/country_code"
+            tools:src="@drawable/ic_call_incoming" />
+
         <TextView
             android:id="@+id/country_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="?android:textColorSecondary"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/call_type_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="+91" />
 
@@ -45,7 +56,7 @@
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?android:textColorSecondary"
             app:layout_constraintEnd_toStartOf="@id/open_chat_button"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/call_type_icon"
             app:layout_constraintTop_toBottomOf="@id/phone_number"
             tools:text="Jan 31, 2025 00:01" />
 

@@ -26,11 +26,26 @@
     <string name="open_chat">Open Chat</string>
     <string name="chat">Chat</string>
 
+    <!-- Call Log Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_incoming">Incoming</string>
+    <string name="filter_outgoing">Outgoing</string>
+    <string name="filter_missed">Missed</string>
+    <string name="filter_contacts">Contacts</string>
+    <string name="filter_non_contacts">Non-contacts</string>
+
+    <!-- Call type accessibility descriptions -->
+    <string name="call_type_incoming">Incoming call</string>
+    <string name="call_type_outgoing">Outgoing call</string>
+    <string name="call_type_missed">Missed call</string>
+
     <!-- Empty States -->
     <string name="empty_call_logs_title">No recent calls</string>
     <string name="empty_call_logs_description">Your recent calls will appear here</string>
     <string name="empty_call_logs_permission_title">Permission required</string>
     <string name="empty_call_logs_permission_description">Allow access to call logs to see your recent calls</string>
+    <string name="empty_filtered_call_logs_title">No matching calls</string>
+    <string name="empty_filtered_call_logs_description">Try changing your filters to see more results</string>
     <string name="grant_permission">Grant Permission</string>
 
     <!-- Validation Errors -->
