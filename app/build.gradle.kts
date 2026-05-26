@@ -59,7 +59,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("app.cash.turbine:turbine:1.1.0")
     testImplementation("org.robolectric:robolectric:4.13")
-    testImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation(libs.androidx.junit)
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.github.takahirom.roborazzi:roborazzi:1.27.0")
     testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.27.0")
