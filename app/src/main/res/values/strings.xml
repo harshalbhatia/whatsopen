@@ -27,11 +27,8 @@
     <string name="chat">Chat</string>
 
     <!-- Call Log Filters -->
-    <string name="filter_all">All</string>
     <string name="filter_incoming">Incoming</string>
-    <string name="filter_outgoing">Outgoing</string>
     <string name="filter_missed">Missed</string>
-    <string name="filter_contacts">Contacts</string>
     <string name="filter_non_contacts">Non-contacts</string>
 
     <!-- Call type accessibility descriptions -->

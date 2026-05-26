@@ -1,6 +1,7 @@
 package com.example.whatsopen
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -34,15 +35,17 @@ class CallLogsFragment : Fragment() {
     private lateinit var adapter: CallLogsAdapter
 
     private var allCallLogs: List<CallLogItem> = emptyList()
-    private var selectedCallType: Int? = null
-    private var selectedContactFilter: ContactFilter = ContactFilter.ALL
+    private var filterIncoming = false
+    private var filterMissed = false
+    private var filterNonContactsOnly = false
 
-    private enum class ContactFilter { ALL, CONTACTS_ONLY, NON_CONTACTS_ONLY }
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val callLogGranted = permissions[Manifest.permission.READ_CALL_LOG] == true
+        val contactsGranted = permissions[Manifest.permission.READ_CONTACTS] == true
+        if (callLogGranted) {
+            updateNonContactsChipState(contactsGranted)
             loadCallLogs()
         } else {
             showPermissionDeniedState()
@@ -53,7 +56,7 @@ class CallLogsFragment : Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            enableContactFilterChips()
+            binding.chipNonContactsOnly.isEnabled = true
             loadCallLogs()
         }
     }
@@ -79,41 +82,31 @@ class CallLogsFragment : Fragment() {
             adapter = this@CallLogsFragment.adapter
         }
 
-        binding.callTypeChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            selectedCallType = when {
-                checkedIds.contains(R.id.chip_incoming) -> CallLog.Calls.INCOMING_TYPE
-                checkedIds.contains(R.id.chip_outgoing) -> CallLog.Calls.OUTGOING_TYPE
-                checkedIds.contains(R.id.chip_missed) -> CallLog.Calls.MISSED_TYPE
-                else -> null
-            }
+        binding.chipIncoming.setOnCheckedChangeListener { _, isChecked ->
+            filterIncoming = isChecked
             applyFilters()
         }
 
-        binding.contactStatusChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            selectedContactFilter = when {
-                checkedIds.contains(R.id.chip_contacts_only) -> ContactFilter.CONTACTS_ONLY
-                checkedIds.contains(R.id.chip_non_contacts_only) -> ContactFilter.NON_CONTACTS_ONLY
-                else -> ContactFilter.ALL
-            }
+        binding.chipMissed.setOnCheckedChangeListener { _, isChecked ->
+            filterMissed = isChecked
             applyFilters()
         }
 
-        updateContactChipsState()
-
-        binding.chipContactsOnly.setOnClickListener {
-            if (!hasContactsPermission()) {
+        binding.chipNonContactsOnly.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked && !hasContactsPermission()) {
+                binding.chipNonContactsOnly.isChecked = false
                 requestContactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                return@setOnCheckedChangeListener
             }
-        }
-        binding.chipNonContactsOnly.setOnClickListener {
-            if (!hasContactsPermission()) {
-                requestContactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-            }
+            filterNonContactsOnly = isChecked
+            applyFilters()
         }
 
         binding.grantPermissionButton.setOnClickListener {
             if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
+                requestPermissionsLauncher.launch(
+                    arrayOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS)
+                )
             } else {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", requireContext().packageName, null)
@@ -122,23 +115,23 @@ class CallLogsFragment : Fragment() {
             }
         }
 
-        checkPermissionAndLoadLogs()
+        checkPermissionsAndLoadLogs()
     }
 
-    private fun checkPermissionAndLoadLogs() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_CALL_LOG
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                loadCallLogs()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG) -> {
-                showPermissionDeniedState()
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
-            }
+    private fun checkPermissionsAndLoadLogs() {
+        val hasCallLog = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.READ_CALL_LOG
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasCallLog) {
+            updateNonContactsChipState(hasContactsPermission())
+            loadCallLogs()
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
+            showPermissionDeniedState()
+        } else {
+            requestPermissionsLauncher.launch(
+                arrayOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS)
+            )
         }
     }
 
@@ -149,25 +142,17 @@ class CallLogsFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun updateContactChipsState() {
-        val hasPermission = hasContactsPermission()
-        binding.chipContactsOnly.isEnabled = hasPermission
+    private fun updateNonContactsChipState(hasPermission: Boolean) {
         binding.chipNonContactsOnly.isEnabled = hasPermission
         if (!hasPermission) {
-            binding.chipAllContacts.isChecked = true
-            selectedContactFilter = ContactFilter.ALL
+            binding.chipNonContactsOnly.isChecked = false
+            filterNonContactsOnly = false
         }
-    }
-
-    private fun enableContactFilterChips() {
-        binding.chipContactsOnly.isEnabled = true
-        binding.chipNonContactsOnly.isEnabled = true
     }
 
     private fun showPermissionDeniedState() {
         binding.recyclerView.isVisible = false
-        binding.callTypeFilterScroll.isVisible = false
-        binding.contactFilterScroll.isVisible = false
+        binding.filterScroll.isVisible = false
         binding.emptyState.isVisible = true
         binding.emptyStateTitle.text = getString(R.string.empty_call_logs_permission_title)
         binding.emptyStateDescription.text = getString(R.string.empty_call_logs_permission_description)
@@ -197,12 +182,14 @@ class CallLogsFragment : Fragment() {
 
     private fun applyFilters() {
         val filtered = allCallLogs.filter { item ->
-            val matchesType = selectedCallType == null || item.callType == selectedCallType
-            val matchesContact = when (selectedContactFilter) {
-                ContactFilter.ALL -> true
-                ContactFilter.CONTACTS_ONLY -> item.isContact
-                ContactFilter.NON_CONTACTS_ONLY -> !item.isContact
+            val matchesType = when {
+                filterIncoming && filterMissed ->
+                    item.callType == CallLog.Calls.INCOMING_TYPE || item.callType == CallLog.Calls.MISSED_TYPE
+                filterIncoming -> item.callType == CallLog.Calls.INCOMING_TYPE
+                filterMissed -> item.callType == CallLog.Calls.MISSED_TYPE
+                else -> true
             }
+            val matchesContact = !filterNonContactsOnly || !item.isContact
             matchesType && matchesContact
         }
 
@@ -217,7 +204,7 @@ class CallLogsFragment : Fragment() {
         }
     }
 
-    private fun lookupContactNumbers(numbers: Set<String>): Set<String> {
+    private fun lookupContactNumbers(context: Context, numbers: Set<String>): Set<String> {
         val contactNumbers = mutableSetOf<String>()
         for (number in numbers) {
             val lookupUri = Uri.withAppendedPath(
@@ -225,7 +212,7 @@ class CallLogsFragment : Fragment() {
                 Uri.encode(number)
             )
             try {
-                requireContext().contentResolver.query(
+                context.contentResolver.query(
                     lookupUri,
                     arrayOf(ContactsContract.PhoneLookup._ID),
                     null,
@@ -244,13 +231,14 @@ class CallLogsFragment : Fragment() {
     }
 
     private fun loadCallLogs() {
-        binding.callTypeFilterScroll.isVisible = true
-        binding.contactFilterScroll.isVisible = true
+        binding.filterScroll.isVisible = true
+
+        val appContext = requireContext().applicationContext
 
         viewLifecycleOwner.lifecycleScope.launch {
             val callLogs = withContext(Dispatchers.IO) {
                 val results = mutableListOf<Triple<String, Long, Int>>()
-                requireContext().contentResolver.query(
+                appContext.contentResolver.query(
                     CallLog.Calls.CONTENT_URI,
                     arrayOf(
                         CallLog.Calls.NUMBER,
@@ -271,7 +259,7 @@ class CallLogsFragment : Fragment() {
 
                 val contactNumbers = if (hasContactsPermission()) {
                     val uniqueNumbers = results.map { it.first }.toSet()
-                    lookupContactNumbers(uniqueNumbers)
+                    lookupContactNumbers(appContext, uniqueNumbers)
                 } else {
                     emptySet()
                 }
