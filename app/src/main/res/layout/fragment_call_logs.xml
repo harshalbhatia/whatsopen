@@ -26,7 +26,7 @@
         app:layout_constraintTop_toBottomOf="@id/title" />
 
     <HorizontalScrollView
-        android:id="@+id/call_type_filter_scroll"
+        android:id="@+id/filter_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_subtitle_filters"
@@ -35,19 +35,11 @@
         app:layout_constraintTop_toBottomOf="@id/subtitle">
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/call_type_chip_group"
+            android:id="@+id/filter_chip_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_all"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/filter_all" />
+            app:singleSelection="false"
+            app:selectionRequired="false">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_incoming"
@@ -59,15 +51,6 @@
                 app:chipIconVisible="true" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chip_outgoing"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_outgoing"
-                app:chipIcon="@drawable/ic_call_outgoing"
-                app:chipIconVisible="true" />
-
-            <com.google.android.material.chip.Chip
                 android:id="@+id/chip_missed"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
@@ -75,40 +58,6 @@
                 android:text="@string/filter_missed"
                 app:chipIcon="@drawable/ic_call_missed"
                 app:chipIconVisible="true" />
-
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
-
-    <HorizontalScrollView
-        android:id="@+id/contact_filter_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/chip_spacing"
-        android:scrollbars="none"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/call_type_filter_scroll">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/contact_status_chip_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_all_contacts"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/filter_all" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_contacts_only"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_contacts" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_non_contacts_only"
@@ -128,7 +77,7 @@
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contact_filter_scroll" />
+        app:layout_constraintTop_toBottomOf="@id/filter_scroll" />
 
     <LinearLayout
         android:id="@+id/empty_state"
@@ -140,7 +89,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contact_filter_scroll">
+        app:layout_constraintTop_toBottomOf="@id/filter_scroll">
 
         <ImageView
             android:layout_width="64dp"
