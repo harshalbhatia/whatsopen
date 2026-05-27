@@ -2,9 +2,9 @@ package com.harshalbhatia.whatsopen
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
@@ -15,9 +15,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -25,12 +24,6 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.navHostFragmentContentMain) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(top = bars.top)
-            insets
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(bottom = bars.bottom)
             insets
         }
 
