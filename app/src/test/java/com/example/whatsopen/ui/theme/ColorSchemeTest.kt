@@ -67,6 +67,12 @@ class ColorSchemeTest {
     fun lightOnSurface() = assertEquals(Color(0xFF191C1B), LightColorScheme.onSurface)
 
     @Test
+    fun lightSurfaceContainer() = assertEquals(Color(0xFFEEF1EF), LightColorScheme.surfaceContainer)
+
+    @Test
+    fun lightSurfaceContainerHigh() = assertEquals(Color(0xFFE8EBE9), LightColorScheme.surfaceContainerHigh)
+
+    @Test
     fun lightSurfaceVariant() = assertEquals(Color(0xFFDAE5E0), LightColorScheme.surfaceVariant)
 
     @Test
@@ -137,6 +143,12 @@ class ColorSchemeTest {
 
     @Test
     fun darkOnSurface() = assertEquals(Color(0xFFE1E3E0), DarkColorScheme.onSurface)
+
+    @Test
+    fun darkSurfaceContainer() = assertEquals(Color(0xFF1D201F), DarkColorScheme.surfaceContainer)
+
+    @Test
+    fun darkSurfaceContainerHigh() = assertEquals(Color(0xFF272B29), DarkColorScheme.surfaceContainerHigh)
 
     @Test
     fun darkSurfaceVariant() = assertEquals(Color(0xFF3F4945), DarkColorScheme.surfaceVariant)
