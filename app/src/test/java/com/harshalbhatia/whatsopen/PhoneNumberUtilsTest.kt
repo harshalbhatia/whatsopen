@@ -124,4 +124,34 @@ class PhoneNumberUtilsTest {
         assertEquals("+91", countryCode)
         assertEquals("9876543210", localNumber)
     }
+
+    @Test
+    fun `splitPhoneNumber prefers longer country code when prefix overlaps`() {
+        // 212 (Morocco) and 20 (Egypt) both start with 2. Should pick 212.
+        val (countryCode, localNumber) = PhoneNumberUtils.splitPhoneNumber("+2121234567")
+        assertEquals("+212", countryCode)
+        assertEquals("1234567", localNumber)
+    }
+
+    @Test
+    fun `splitPhoneNumber strips formatting before splitting`() {
+        val (countryCode, localNumber) = PhoneNumberUtils.splitPhoneNumber("+1 (415) 555-1234")
+        assertEquals("+1", countryCode)
+        assertEquals("4155551234", localNumber)
+    }
+
+    @Test
+    fun `splitPhoneNumber falls back when no known country code prefix`() {
+        // 999 is not a real country code
+        val (countryCode, localNumber) = PhoneNumberUtils.splitPhoneNumber("+9991234567")
+        assertEquals("", countryCode)
+        assertEquals("+9991234567", localNumber)
+    }
+
+    @Test
+    fun `splitPhoneNumber handles empty string`() {
+        val (countryCode, localNumber) = PhoneNumberUtils.splitPhoneNumber("")
+        assertEquals("", countryCode)
+        assertEquals("", localNumber)
+    }
 }
