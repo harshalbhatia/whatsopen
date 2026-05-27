@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -94,7 +92,6 @@ fun ClipboardScreen(
                     }
                 },
                 isError = state.errorRes != null,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                 maxLines = Int.MAX_VALUE,
             )
             Spacer(Modifier.height(16.dp))
@@ -116,7 +113,6 @@ fun ClipboardScreen(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    // One-shot event collection scoped to STARTED so emissions are dropped if screen is backgrounded.
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             vm.submitEvents.collect(onLaunchWhatsApp)
