@@ -32,6 +32,7 @@ class DefaultCallLogRepository(
             }
             raw.map { entry ->
                 CallLogItem(
+                    id = entry.id,
                     number = entry.number,
                     date = entry.date,
                     callType = entry.type,
@@ -40,13 +41,14 @@ class DefaultCallLogRepository(
             }
         }
 
-    private data class RawEntry(val number: String, val date: Long, val type: Int)
+    private data class RawEntry(val id: Long, val number: String, val date: Long, val type: Int)
 
     private fun queryCallLog(): List<RawEntry> {
         val results = mutableListOf<RawEntry>()
         contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             arrayOf(
+                CallLog.Calls._ID,
                 CallLog.Calls.NUMBER,
                 CallLog.Calls.DATE,
                 CallLog.Calls.TYPE,
@@ -58,9 +60,10 @@ class DefaultCallLogRepository(
             while (cursor.moveToNext()) {
                 results.add(
                     RawEntry(
-                        number = cursor.getString(0) ?: "",
-                        date = cursor.getLong(1),
-                        type = cursor.getInt(2),
+                        id = cursor.getLong(0),
+                        number = cursor.getString(1) ?: "",
+                        date = cursor.getLong(2),
+                        type = cursor.getInt(3),
                     ),
                 )
             }
@@ -88,6 +91,8 @@ class DefaultCallLogRepository(
                         contactNumbers.add(number)
                     }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (_: Exception) {
                 // SecurityException (permission revoked) or other I/O errors; skip silently.
             }

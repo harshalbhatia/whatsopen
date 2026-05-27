@@ -129,6 +129,8 @@ class CallLogsViewModel(
                 val items = repository.loadCallLogs(includeContactStatus)
                 callLogsFlow.value = items
                 loadErrorFlow.value = false
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (_: Exception) {
                 callLogsFlow.value = emptyList()
                 loadErrorFlow.value = true
