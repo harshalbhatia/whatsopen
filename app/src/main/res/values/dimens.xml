@@ -26,8 +26,4 @@
     <dimen name="card_padding">16dp</dimen>
     <dimen name="card_margin_vertical">6dp</dimen>
 
-    <!-- CountryCodeTextInputLayout -->
-    <dimen name="country_flag_text_size">18sp</dimen>
-    <dimen name="country_name_text_size">14sp</dimen>
-    <dimen name="country_code_padding_start">70dp</dimen>
 </resources>

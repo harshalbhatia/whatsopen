@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="paste_and_open"
+        android:enabled="true"
+        android:icon="@drawable/ic_content_paste"
+        android:shortcutShortLabel="@string/shortcut_paste_short"
+        android:shortcutLongLabel="@string/shortcut_paste_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harshalbhatia.whatsopen"
+            android:targetClass="com.harshalbhatia.whatsopen.MainActivity">
+            <extra
+                android:name="open_tab"
+                android:value="clipboard" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_call_logs"
+        android:enabled="true"
+        android:icon="@drawable/ic_call_log"
+        android:shortcutShortLabel="@string/shortcut_call_logs_short"
+        android:shortcutLongLabel="@string/shortcut_call_logs_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harshalbhatia.whatsopen"
+            android:targetClass="com.harshalbhatia.whatsopen.MainActivity">
+            <extra
+                android:name="open_tab"
+                android:value="call_logs" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

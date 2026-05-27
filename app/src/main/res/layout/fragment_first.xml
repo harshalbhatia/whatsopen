@@ -39,7 +39,7 @@
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/subtitle">
 
-            <com.harshalbhatia.whatsopen.CountryCodeTextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/country_code_input_layout"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -47,7 +47,8 @@
                 app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
                 app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
                 app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
-                app:boxCornerRadiusTopStart="@dimen/corner_radius_input">
+                app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
+                app:prefixText="+">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/country_code_input"
@@ -55,12 +56,11 @@
                     android:layout_height="@dimen/input_height"
                     android:imeOptions="actionNext"
                     android:inputType="phone"
-                    android:maxLength="4"
+                    android:maxLength="3"
                     android:nextFocusDown="@id/phone_input"
-                    android:text="+"
                     android:textAlignment="viewStart" />
 
-            </com.harshalbhatia.whatsopen.CountryCodeTextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/country_info"

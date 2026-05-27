@@ -1,5 +1,7 @@
 package com.harshalbhatia.whatsopen
 
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -46,6 +48,34 @@ class ClipboardFragment : Fragment() {
 
             WhatsAppLauncher.openChat(requireContext(), numbers.first())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        prefillFromSource()
+    }
+
+    private fun prefillFromSource() {
+        if (!binding.numbersInput.text.isNullOrBlank()) return
+
+        val shared = PendingShare.consume()
+        if (!shared.isNullOrBlank()) {
+            binding.numbersInput.setText(shared)
+            return
+        }
+
+        val clipText = readClipboardText() ?: return
+        if (PhoneNumberUtils.parsePhoneNumbers(clipText).isNotEmpty()) {
+            binding.numbersInput.setText(clipText)
+        }
+    }
+
+    private fun readClipboardText(): String? {
+        val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            ?: return null
+        val clip = cm.primaryClip ?: return null
+        if (clip.itemCount == 0) return null
+        return clip.getItemAt(0).coerceToText(requireContext())?.toString()
     }
 
     override fun onDestroyView() {

@@ -28,21 +28,12 @@ class FirstFragment : Fragment() {
 
         binding.countryCodeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!s.toString().startsWith("+")) {
-                    binding.countryCodeInput.setText("+${s.toString().replace("+", "")}")
-                    binding.countryCodeInput.setSelection(binding.countryCodeInput.text?.length ?: 0)
-                }
-
-                val numericCode = s.toString().replace("+", "")
-                val countryInfo = COUNTRY_DATA[numericCode]
-                (binding.countryCodeInputLayout as CountryCodeTextInputLayout)
-                    .setCountryInfo(countryInfo?.flag, countryInfo?.name)
-
+                val digits = s?.toString().orEmpty().filter { it.isDigit() }
+                val info = COUNTRY_DATA[digits]
+                binding.countryInfo.text = if (info != null) "${info.flag}  ${info.name}" else null
                 binding.countryCodeInputLayout.error = null
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -65,10 +56,9 @@ class FirstFragment : Fragment() {
             binding.countryCodeInputLayout.error = null
             binding.phoneInputLayout.error = null
 
-            val countryCode = binding.countryCodeInput.text.toString().trim()
-                .replace(Regex("[^0-9+]"), "")
-                .replace("+", "")
-            val phoneNumber = binding.phoneInput.text.toString().trim()
+            val countryCode = binding.countryCodeInput.text.toString()
+                .replace(Regex("[^0-9]"), "")
+            val phoneNumber = binding.phoneInput.text.toString()
                 .replace(Regex("[^0-9]"), "")
 
             var hasError = false
