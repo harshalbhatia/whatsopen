@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import android.os.Bundle
 import android.text.Editable
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
-import com.example.whatsopen.databinding.FragmentFirstBinding
+import com.harshalbhatia.whatsopen.databinding.FragmentFirstBinding
 
 class FirstFragment : Fragment() {
 

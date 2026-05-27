@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import android.content.Context
 import android.content.Intent

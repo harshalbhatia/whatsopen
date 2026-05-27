@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import android.Manifest
 import android.content.Context
@@ -21,8 +21,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.whatsopen.databinding.FragmentCallLogsBinding
-import com.example.whatsopen.databinding.ItemCallLogBinding
+import com.harshalbhatia.whatsopen.databinding.FragmentCallLogsBinding
+import com.harshalbhatia.whatsopen.databinding.ItemCallLogBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

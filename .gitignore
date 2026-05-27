@@ -55,3 +55,6 @@ Thumbs.db
 
 # Android Profiling
 *.hprof
+
+# Claude Code local config
+.claude/

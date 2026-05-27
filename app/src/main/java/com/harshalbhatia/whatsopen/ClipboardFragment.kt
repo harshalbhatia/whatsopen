@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import android.os.Bundle
 import android.text.Editable
@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.whatsopen.databinding.FragmentClipboardBinding
+import com.harshalbhatia.whatsopen.databinding.FragmentClipboardBinding
 
 class ClipboardFragment : Fragment() {
     private var _binding: FragmentClipboardBinding? = null
