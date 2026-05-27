@@ -35,6 +35,7 @@
     <string name="call_type_incoming">Incoming call</string>
     <string name="call_type_outgoing">Outgoing call</string>
     <string name="call_type_missed">Missed call</string>
+    <string name="call_log_card_a11y_description">%1$s from %2$s %3$s, %4$s</string>
 
     <!-- Empty States -->
     <string name="empty_call_logs_title">No recent calls</string>

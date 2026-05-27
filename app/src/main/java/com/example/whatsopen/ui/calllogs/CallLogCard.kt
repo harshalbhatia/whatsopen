@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,7 +30,6 @@ import com.example.whatsopen.R
 import com.example.whatsopen.data.CallLogItem
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun CallLogCard(
@@ -41,10 +41,10 @@ fun CallLogCard(
     val (countryCode, phoneNumber) = remember(item.number) {
         PhoneNumberUtils.splitPhoneNumber(item.number.trim())
     }
-    val dateFormat = remember {
-        SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+    val locale = LocalConfiguration.current.locales[0]
+    val formattedDate = remember(item.date, locale) {
+        SimpleDateFormat("MMM dd, yyyy HH:mm", locale).format(Date(item.date))
     }
-    val formattedDate = remember(item.date) { dateFormat.format(Date(item.date)) }
 
     val (iconRes, descriptionRes) = when (item.callType) {
         CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_incoming to R.string.call_type_incoming
@@ -53,7 +53,13 @@ fun CallLogCard(
         else -> R.drawable.ic_call_incoming to R.string.call_type_incoming
     }
     val typeDescription = stringResource(descriptionRes)
-    val composite = "$typeDescription from $countryCode $phoneNumber, $formattedDate"
+    val composite = stringResource(
+        R.string.call_log_card_a11y_description,
+        typeDescription,
+        countryCode,
+        phoneNumber,
+        formattedDate,
+    )
 
     OutlinedCard(
         onClick = onCardClick,
