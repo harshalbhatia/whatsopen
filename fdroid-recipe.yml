@@ -1,0 +1,24 @@
+Categories:
+  - Phone & SMS
+License: Apache-2.0
+AuthorName: Harshal Bhatia
+SourceCode: https://github.com/harshalbhatia/whatsopen
+IssueTracker: https://github.com/harshalbhatia/whatsopen/issues
+
+AutoName: WhatsOpen
+
+RepoType: git
+Repo: https://github.com/harshalbhatia/whatsopen.git
+
+Builds:
+  - versionName: '1.0'
+    versionCode: 1
+    commit: v1.0.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0'
+CurrentVersionCode: 1
