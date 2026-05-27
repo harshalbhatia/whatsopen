@@ -1,0 +1,1 @@
+- Enable reproducible builds for F-Droid verification
