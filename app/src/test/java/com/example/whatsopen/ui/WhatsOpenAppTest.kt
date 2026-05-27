@@ -66,7 +66,9 @@ class WhatsOpenAppTest {
             .onNodeWithContentDescription(context.getString(R.string.nav_clipboard))
             .performClick()
 
-        composeTestRule.onNodeWithText("TODO: Clipboard").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.clipboard_subtitle))
+            .assertIsDisplayed()
     }
 
     @Test

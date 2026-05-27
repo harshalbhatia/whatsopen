@@ -1,8 +1,6 @@
 package com.example.whatsopen.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentPaste
@@ -18,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +32,7 @@ import com.example.whatsopen.R
 import com.example.whatsopen.WhatsAppLauncher
 import com.example.whatsopen.ui.bynumber.ByNumberScreen
 import com.example.whatsopen.ui.calllogs.CallLogsScreen
+import com.example.whatsopen.ui.clipboard.ClipboardScreen
 
 sealed class Destination(
     val route: String,
@@ -95,9 +93,11 @@ fun WhatsOpenApp(navController: NavHostController = rememberNavController()) {
                 )
             }
             composable(Destination.Clipboard.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("TODO: Clipboard")
-                }
+                ClipboardScreen(
+                    onLaunchWhatsApp = { number ->
+                        WhatsAppLauncher.openChat(context, number)
+                    },
+                )
             }
         }
     }
