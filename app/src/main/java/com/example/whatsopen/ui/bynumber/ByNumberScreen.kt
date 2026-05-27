@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -23,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -51,13 +51,12 @@ fun ByNumberScreen(
             )
         },
         contentWindowInsets = WindowInsets.safeDrawing,
-    ) { padding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(padding)
-                .consumeWindowInsets(padding)
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .imePadding()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -114,7 +113,7 @@ fun ByNumberScreen(
         }
     }
 
-    androidx.compose.runtime.LaunchedEffect(vm) {
+    LaunchedEffect(Unit) {
         vm.submitEvents.collect { number -> onLaunchWhatsApp(number) }
     }
 }
@@ -128,7 +127,7 @@ private fun supportingTextFor(state: ByNumberUiState): @Composable (() -> Unit)?
             { Text(stringResource(err)) }
         }
         name != null && flag != null -> {
-            { Text("$flag  $name") }
+            { Text("$flag $name") }
         }
         else -> null
     }

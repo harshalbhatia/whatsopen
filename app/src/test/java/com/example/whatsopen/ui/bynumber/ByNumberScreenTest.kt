@@ -69,7 +69,7 @@ class ByNumberScreenTest {
             .onNodeWithText(context.getString(R.string.country_code_hint))
             .performTextInput("91")
 
-        composeTestRule.onNodeWithText("🇮🇳  India").assertIsDisplayed()
+        composeTestRule.onNodeWithText("🇮🇳 India").assertIsDisplayed()
     }
 
     @Test

@@ -31,7 +31,13 @@ class ByNumberScreenScreenshotTest {
     fun populated_light() = capture(dark = false, populated = true, error = false, name = "populated_light")
 
     @Test
+    fun populated_dark() = capture(dark = true, populated = true, error = false, name = "populated_dark")
+
+    @Test
     fun error_light() = capture(dark = false, populated = false, error = true, name = "error_light")
+
+    @Test
+    fun error_dark() = capture(dark = true, populated = false, error = true, name = "error_dark")
 
     private fun capture(dark: Boolean, populated: Boolean, error: Boolean, name: String) {
         val vm = ByNumberViewModel(SavedStateHandle(), DefaultCountryLookup)
