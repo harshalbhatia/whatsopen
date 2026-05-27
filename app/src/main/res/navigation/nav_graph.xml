@@ -3,13 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/navigation_by_number">
-
-    <fragment
-        android:id="@+id/navigation_by_number"
-        android:name="com.example.whatsopen.FirstFragment"
-        android:label="@string/nav_by_number"
-        tools:layout="@layout/fragment_first" />
+    app:startDestination="@id/navigation_call_logs">
 
     <fragment
         android:id="@+id/navigation_call_logs"

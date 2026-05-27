@@ -40,7 +40,9 @@ class WhatsOpenAppTest {
     fun shows_by_number_destination_by_default() {
         setAppContent()
 
-        composeTestRule.onNodeWithText("TODO: ByNumber").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.subtitle))
+            .assertIsDisplayed()
     }
 
     @Test
@@ -77,6 +79,8 @@ class WhatsOpenAppTest {
         composeTestRule
             .onNodeWithContentDescription(context.getString(R.string.nav_by_number))
             .performClick()
-        composeTestRule.onNodeWithText("TODO: ByNumber").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.subtitle))
+            .assertIsDisplayed()
     }
 }

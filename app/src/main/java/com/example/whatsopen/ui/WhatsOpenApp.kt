@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +32,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.whatsopen.R
+import com.example.whatsopen.WhatsAppLauncher
+import com.example.whatsopen.ui.bynumber.ByNumberScreen
 
 sealed class Destination(
     val route: String,
@@ -67,6 +70,7 @@ fun WhatsOpenApp(navController: NavHostController = rememberNavController()) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
+    val context = LocalContext.current
     Scaffold(
         bottomBar = { WhatsOpenBottomBar(navController, currentRoute) },
     ) { padding ->
@@ -76,9 +80,11 @@ fun WhatsOpenApp(navController: NavHostController = rememberNavController()) {
             modifier = Modifier.padding(padding),
         ) {
             composable(Destination.ByNumber.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("TODO: ByNumber")
-                }
+                ByNumberScreen(
+                    onLaunchWhatsApp = { number ->
+                        WhatsAppLauncher.openChat(context, number)
+                    },
+                )
             }
             composable(Destination.CallLogs.route) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
