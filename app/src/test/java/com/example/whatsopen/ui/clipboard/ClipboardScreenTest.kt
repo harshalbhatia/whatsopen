@@ -68,7 +68,7 @@ class ClipboardScreenTest {
             .onNodeWithTag(ClipboardTags.SUBMIT)
             .performClick()
 
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 1_000) { captured != null }
         assertEquals("+14155551234", captured)
     }
 }

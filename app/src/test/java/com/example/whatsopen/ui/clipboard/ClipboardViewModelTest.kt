@@ -113,9 +113,12 @@ class ClipboardViewModelTest {
 
     @Test
     fun text_survives_process_death() = runTest {
-        val handle = SavedStateHandle(mapOf("clipboard_text" to "persisted"))
-        val vm = ClipboardViewModel(handle)
-        vm.uiState.test {
+        val handle = SavedStateHandle()
+        val vmA = ClipboardViewModel(handle)
+        vmA.onTextChanged("persisted")
+
+        val vmB = ClipboardViewModel(handle)
+        vmB.uiState.test {
             val s = awaitItem()
             assertEquals("persisted", s.text)
         }
