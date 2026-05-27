@@ -32,9 +32,9 @@ class CallLogsScreenTest {
     private lateinit var context: Context
 
     private val sample = listOf(
-        CallLogItem("111", 1_000, CallLog.Calls.INCOMING_TYPE, isContact = true),
-        CallLogItem("222", 2_000, CallLog.Calls.MISSED_TYPE, isContact = false),
-        CallLogItem("333", 3_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
+        CallLogItem(1L, "111", 1_000, CallLog.Calls.INCOMING_TYPE, isContact = true),
+        CallLogItem(2L, "222", 2_000, CallLog.Calls.MISSED_TYPE, isContact = false),
+        CallLogItem(3L, "333", 3_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
     )
 
     @Before

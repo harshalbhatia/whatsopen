@@ -197,7 +197,7 @@ fun CallLogsScreen(
                     ) {
                         items(
                             items = state.filteredLogs,
-                            key = { "${it.number}_${it.date}" },
+                            key = { it.id },
                         ) { item ->
                             CallLogCard(
                                 item = item,

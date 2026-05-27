@@ -24,10 +24,10 @@ class CallLogsScreenScreenshotTest {
     val composeTestRule = createComposeRule()
 
     private val populated = listOf(
-        CallLogItem("+15551234567", baseDate, CallLog.Calls.INCOMING_TYPE, isContact = true),
-        CallLogItem("+447700900123", baseDate - 60_000, CallLog.Calls.MISSED_TYPE, isContact = false),
-        CallLogItem("+919876543210", baseDate - 3_600_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
-        CallLogItem("5552223333", baseDate - 86_400_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
+        CallLogItem(1L, "+15551234567", baseDate, CallLog.Calls.INCOMING_TYPE, isContact = true),
+        CallLogItem(2L, "+447700900123", baseDate - 60_000, CallLog.Calls.MISSED_TYPE, isContact = false),
+        CallLogItem(3L, "+919876543210", baseDate - 3_600_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
+        CallLogItem(4L, "5552223333", baseDate - 86_400_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
     )
 
     @Test

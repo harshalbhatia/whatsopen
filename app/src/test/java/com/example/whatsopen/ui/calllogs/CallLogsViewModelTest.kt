@@ -27,15 +27,15 @@ class CallLogsViewModelTest {
 
     private val sample = listOf(
         // 3 incoming
-        CallLogItem("111", 1_000, CallLog.Calls.INCOMING_TYPE, isContact = true),
-        CallLogItem("112", 2_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
-        CallLogItem("113", 3_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
+        CallLogItem(1L, "111", 1_000, CallLog.Calls.INCOMING_TYPE, isContact = true),
+        CallLogItem(2L, "112", 2_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
+        CallLogItem(3L, "113", 3_000, CallLog.Calls.INCOMING_TYPE, isContact = false),
         // 2 missed
-        CallLogItem("221", 4_000, CallLog.Calls.MISSED_TYPE, isContact = true),
-        CallLogItem("222", 5_000, CallLog.Calls.MISSED_TYPE, isContact = false),
+        CallLogItem(4L, "221", 4_000, CallLog.Calls.MISSED_TYPE, isContact = true),
+        CallLogItem(5L, "222", 5_000, CallLog.Calls.MISSED_TYPE, isContact = false),
         // 2 outgoing
-        CallLogItem("331", 6_000, CallLog.Calls.OUTGOING_TYPE, isContact = true),
-        CallLogItem("332", 7_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
+        CallLogItem(6L, "331", 6_000, CallLog.Calls.OUTGOING_TYPE, isContact = true),
+        CallLogItem(7L, "332", 7_000, CallLog.Calls.OUTGOING_TYPE, isContact = false),
     )
 
     private fun newViewModel(
