@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,14 +26,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.whatsopen.R
+
+object ByNumberTags {
+    const val COUNTRY_CODE = "by_number_country_code"
+    const val PHONE = "by_number_phone"
+    const val SUBMIT = "by_number_submit"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +87,9 @@ fun ByNumberScreen(
                     imeAction = ImeAction.Next,
                 ),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ByNumberTags.COUNTRY_CODE),
             )
             OutlinedTextField(
                 value = state.phoneNumber,
@@ -97,24 +110,32 @@ fun ByNumberScreen(
                 ),
                 keyboardActions = KeyboardActions(onGo = { vm.onSubmit() }),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ByNumberTags.PHONE),
             )
             Button(
                 onClick = vm::onSubmit,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ByNumberTags.SUBMIT),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_whatsapp),
                     contentDescription = null,
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(stringResource(R.string.open_in_whatsapp))
             }
         }
     }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // One-shot event collection scoped to STARTED so emissions are dropped if screen is backgrounded.
     LaunchedEffect(Unit) {
-        vm.submitEvents.collect { number -> onLaunchWhatsApp(number) }
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            vm.submitEvents.collect(onLaunchWhatsApp)
+        }
     }
 }
 

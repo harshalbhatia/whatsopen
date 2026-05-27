@@ -5,19 +5,20 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.whatsopen.CountryLookup
 import com.example.whatsopen.DefaultCountryLookup
 import com.example.whatsopen.R
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.SharingStarted
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class ByNumberUiState(
     val countryCode: String = "",
@@ -44,33 +45,20 @@ class ByNumberViewModel(
         countryCodeErrorFlow,
         phoneErrorFlow,
     ) { country, phone, countryErr, phoneErr ->
-        val info = if (country.isNotEmpty()) lookup.lookup(country) else null
-        ByNumberUiState(
-            countryCode = country,
-            phoneNumber = phone,
-            countryName = info?.name,
-            countryFlag = info?.flag,
-            countryCodeError = countryErr,
-            phoneError = phoneErr,
-        )
+        buildState(country, phone, countryErr, phoneErr)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = run {
-            val country = countryCodeFlow.value
-            val phone = phoneNumberFlow.value
-            val info = if (country.isNotEmpty()) lookup.lookup(country) else null
-            ByNumberUiState(
-                countryCode = country,
-                phoneNumber = phone,
-                countryName = info?.name,
-                countryFlag = info?.flag,
-            )
-        },
+        started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+        initialValue = buildState(
+            countryCodeFlow.value,
+            phoneNumberFlow.value,
+            countryCodeErrorFlow.value,
+            phoneErrorFlow.value,
+        ),
     )
 
-    private val _submitEvents = MutableSharedFlow<String>(extraBufferCapacity = 1)
-    val submitEvents: SharedFlow<String> = _submitEvents.asSharedFlow()
+    private val _submitChannel = Channel<String>(Channel.BUFFERED)
+    val submitEvents: Flow<String> = _submitChannel.receiveAsFlow()
 
     fun onCountryCodeChanged(input: String) {
         val cleaned = input.removePrefix("+").filter { it.isDigit() }
@@ -97,13 +85,31 @@ class ByNumberViewModel(
             hasError = true
         }
         if (!hasError) {
-            _submitEvents.tryEmit(country + phone)
+            viewModelScope.launch { _submitChannel.send(country + phone) }
         }
+    }
+
+    private fun buildState(
+        countryCode: String,
+        phoneNumber: String,
+        @StringRes countryCodeError: Int?,
+        @StringRes phoneError: Int?,
+    ): ByNumberUiState {
+        val info = if (countryCode.isNotEmpty()) lookup.lookup(countryCode) else null
+        return ByNumberUiState(
+            countryCode = countryCode,
+            phoneNumber = phoneNumber,
+            countryName = info?.name,
+            countryFlag = info?.flag,
+            countryCodeError = countryCodeError,
+            phoneError = phoneError,
+        )
     }
 
     companion object {
         private const val KEY_COUNTRY = "by_number_country"
         private const val KEY_PHONE = "by_number_phone"
+        private const val STOP_TIMEOUT_MILLIS = 5_000L
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

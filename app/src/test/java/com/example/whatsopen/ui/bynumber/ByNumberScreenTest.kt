@@ -3,6 +3,7 @@ package com.example.whatsopen.ui.bynumber
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -66,7 +67,7 @@ class ByNumberScreenTest {
         setContent(vm)
 
         composeTestRule
-            .onNodeWithText(context.getString(R.string.country_code_hint))
+            .onNodeWithTag(ByNumberTags.COUNTRY_CODE)
             .performTextInput("91")
 
         composeTestRule.onNodeWithText("🇮🇳 India").assertIsDisplayed()
@@ -78,7 +79,7 @@ class ByNumberScreenTest {
         setContent(vm)
 
         composeTestRule
-            .onNodeWithText(context.getString(R.string.open_in_whatsapp))
+            .onNodeWithTag(ByNumberTags.SUBMIT)
             .performClick()
 
         composeTestRule
@@ -96,13 +97,13 @@ class ByNumberScreenTest {
         setContent(vm) { captured = it }
 
         composeTestRule
-            .onNodeWithText(context.getString(R.string.country_code_hint))
+            .onNodeWithTag(ByNumberTags.COUNTRY_CODE)
             .performTextInput("91")
         composeTestRule
-            .onNodeWithText(context.getString(R.string.phone_number_hint))
+            .onNodeWithTag(ByNumberTags.PHONE)
             .performTextInput("9876543210")
         composeTestRule
-            .onNodeWithText(context.getString(R.string.open_in_whatsapp))
+            .onNodeWithTag(ByNumberTags.SUBMIT)
             .performClick()
 
         composeTestRule.waitForIdle()
