@@ -11,18 +11,18 @@ android {
         applicationId = "com.harshalbhatia.whatsopen"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.1.2"
+        versionCode = 5
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-        create("release") {
-            val keystorePath = System.getenv("WHATSOPEN_KEYSTORE")
-                ?: "${System.getProperty("user.home")}/.android-keys/whatsopen.jks"
-            val keystorePassword = System.getenv("WHATSOPEN_KEYSTORE_PASSWORD")
-            if (keystorePassword != null && file(keystorePath).exists()) {
+        val keystorePath = System.getenv("WHATSOPEN_KEYSTORE")
+            ?: "${System.getProperty("user.home")}/.android-keys/whatsopen.jks"
+        val keystorePassword = System.getenv("WHATSOPEN_KEYSTORE_PASSWORD")
+        if (keystorePassword != null && file(keystorePath).exists()) {
+            create("release") {
                 storeFile = file(keystorePath)
                 storePassword = keystorePassword
                 keyAlias = "whatsopen"
@@ -39,8 +39,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            val releaseSigning = signingConfigs.getByName("release")
-            if (releaseSigning.storeFile != null) {
+            val releaseSigning = signingConfigs.findByName("release")
+            if (releaseSigning != null) {
                 signingConfig = releaseSigning
             }
         }
