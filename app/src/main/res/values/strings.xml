@@ -30,6 +30,7 @@
     <string name="filter_incoming">Incoming</string>
     <string name="filter_missed">Missed</string>
     <string name="filter_non_contacts">Non-contacts</string>
+    <string name="filter_non_contacts_needs_permission">Non-contacts, tap to grant contacts permission</string>
 
     <!-- Call type accessibility descriptions -->
     <string name="call_type_incoming">Incoming call</string>

@@ -40,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -263,11 +265,19 @@ private fun FilterChipsRow(
             )
         }
         item {
+            val needsPermission = state.contactsPermission != ContactsPermission.Granted
+            val a11yLabel = if (needsPermission) {
+                stringResource(R.string.filter_non_contacts_needs_permission)
+            } else {
+                stringResource(R.string.filter_non_contacts)
+            }
             FilterChip(
                 selected = state.filterNonContactsOnly,
                 onClick = { onNonContacts(!state.filterNonContactsOnly) },
                 label = { Text(stringResource(R.string.filter_non_contacts)) },
-                modifier = Modifier.testTag(CallLogsTags.CHIP_NON_CONTACTS),
+                modifier = Modifier
+                    .testTag(CallLogsTags.CHIP_NON_CONTACTS)
+                    .semantics { contentDescription = a11yLabel },
             )
         }
     }
