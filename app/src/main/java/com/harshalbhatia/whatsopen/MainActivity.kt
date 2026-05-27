@@ -1,10 +1,10 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import com.example.whatsopen.databinding.ActivityMainBinding
+import com.harshalbhatia.whatsopen.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

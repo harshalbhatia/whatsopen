@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.whatsopen"
+    namespace = "com.harshalbhatia.whatsopen"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.whatsopen"
+        applicationId = "com.harshalbhatia.whatsopen"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

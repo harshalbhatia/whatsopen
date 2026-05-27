@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 data class CountryInfo(val flag: String, val name: String)
 

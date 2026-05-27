@@ -1,4 +1,4 @@
-package com.example.whatsopen
+package com.harshalbhatia.whatsopen
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_by_number"
-        android:name="com.example.whatsopen.FirstFragment"
+        android:name="com.harshalbhatia.whatsopen.FirstFragment"
         android:label="@string/nav_by_number"
         tools:layout="@layout/fragment_first" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
-        android:name="com.example.whatsopen.CallLogsFragment"
+        android:name="com.harshalbhatia.whatsopen.CallLogsFragment"
         android:label="@string/nav_call_logs"
         tools:layout="@layout/fragment_call_logs" />
 
     <fragment
         android:id="@+id/navigation_clipboard"
-        android:name="com.example.whatsopen.ClipboardFragment"
+        android:name="com.harshalbhatia.whatsopen.ClipboardFragment"
         android:label="@string/nav_clipboard"
         tools:layout="@layout/fragment_clipboard" />
 </navigation>
