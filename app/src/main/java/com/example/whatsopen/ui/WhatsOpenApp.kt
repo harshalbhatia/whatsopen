@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.whatsopen.R
 import com.example.whatsopen.WhatsAppLauncher
 import com.example.whatsopen.ui.bynumber.ByNumberScreen
+import com.example.whatsopen.ui.calllogs.CallLogsScreen
 
 sealed class Destination(
     val route: String,
@@ -87,9 +88,11 @@ fun WhatsOpenApp(navController: NavHostController = rememberNavController()) {
                 )
             }
             composable(Destination.CallLogs.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("TODO: CallLogs")
-                }
+                CallLogsScreen(
+                    onOpenChat = { number ->
+                        WhatsAppLauncher.openChat(context, number)
+                    },
+                )
             }
             composable(Destination.Clipboard.route) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

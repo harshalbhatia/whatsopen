@@ -53,7 +53,9 @@ class WhatsOpenAppTest {
             .onNodeWithContentDescription(context.getString(R.string.nav_call_logs))
             .performClick()
 
-        composeTestRule.onNodeWithText("TODO: CallLogs").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.call_logs_subtitle))
+            .assertIsDisplayed()
     }
 
     @Test
@@ -74,7 +76,9 @@ class WhatsOpenAppTest {
         composeTestRule
             .onNodeWithContentDescription(context.getString(R.string.nav_call_logs))
             .performClick()
-        composeTestRule.onNodeWithText("TODO: CallLogs").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.call_logs_subtitle))
+            .assertIsDisplayed()
 
         composeTestRule
             .onNodeWithContentDescription(context.getString(R.string.nav_by_number))
