@@ -1,0 +1,8 @@
+- Open WhatsApp directly from tel:, dial, or shared phone numbers
+- App shortcuts: paste & open, jump to call logs
+- Auto-paste a phone number from the clipboard on app resume
+- Call logs: contact name lookup, filter chips, hybrid date format
+- Smart country code split with persistent "+" prefix
+- Tappable cards and WhatsApp icon button in call logs
+- Material You dynamic color, edge-to-edge layout, predictive back
+- Fix bottom nav inset eating viewport on edge-to-edge
