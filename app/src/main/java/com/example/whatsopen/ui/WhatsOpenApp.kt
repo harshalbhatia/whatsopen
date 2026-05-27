@@ -1,6 +1,8 @@
 package com.example.whatsopen.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentPaste
@@ -16,9 +18,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -70,9 +75,21 @@ fun WhatsOpenApp(navController: NavHostController = rememberNavController()) {
             startDestination = Destination.ByNumber.route,
             modifier = Modifier.padding(padding),
         ) {
-            composable(Destination.ByNumber.route) { Text("TODO: ByNumber") }
-            composable(Destination.CallLogs.route) { Text("TODO: CallLogs") }
-            composable(Destination.Clipboard.route) { Text("TODO: Clipboard") }
+            composable(Destination.ByNumber.route) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("TODO: ByNumber")
+                }
+            }
+            composable(Destination.CallLogs.route) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("TODO: CallLogs")
+                }
+            }
+            composable(Destination.Clipboard.route) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("TODO: Clipboard")
+                }
+            }
         }
     }
 }
@@ -82,6 +99,7 @@ private fun WhatsOpenBottomBar(navController: NavHostController, currentRoute: S
     NavigationBar {
         destinations.forEach { dest ->
             val selected = currentRoute == dest.route
+            val label = stringResource(dest.labelRes)
             NavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -98,10 +116,13 @@ private fun WhatsOpenBottomBar(navController: NavHostController, currentRoute: S
                 icon = {
                     Icon(
                         imageVector = if (selected) dest.selectedIcon else dest.icon,
-                        contentDescription = stringResource(dest.labelRes),
+                        contentDescription = label,
                     )
                 },
-                label = { Text(stringResource(dest.labelRes)) },
+                label = { Text(label) },
+                modifier = Modifier.semantics(mergeDescendants = true) {
+                    contentDescription = label
+                },
             )
         }
     }
