@@ -1,10 +1,12 @@
 package com.harshalbhatia.whatsopen
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
 import android.provider.ContactsContract
@@ -26,8 +28,6 @@ import com.harshalbhatia.whatsopen.databinding.ItemCallLogBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CallLogsFragment : Fragment() {
     private var _binding: FragmentCallLogsBinding? = null
@@ -204,8 +204,8 @@ class CallLogsFragment : Fragment() {
         }
     }
 
-    private fun lookupContactNumbers(context: Context, numbers: Set<String>): Set<String> {
-        val contactNumbers = mutableSetOf<String>()
+    private fun lookupContacts(context: Context, numbers: Set<String>): Map<String, String?> {
+        val results = mutableMapOf<String, String?>()
         for (number in numbers) {
             val lookupUri = Uri.withAppendedPath(
                 ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
@@ -214,20 +214,21 @@ class CallLogsFragment : Fragment() {
             try {
                 context.contentResolver.query(
                     lookupUri,
-                    arrayOf(ContactsContract.PhoneLookup._ID),
+                    arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
                     null,
                     null,
                     null
                 )?.use { cursor ->
                     if (cursor.moveToFirst()) {
-                        contactNumbers.add(number)
+                        val name = cursor.getString(0)
+                        results[number] = if (name.isNullOrBlank()) null else name
                     }
                 }
             } catch (_: Exception) {
                 // SecurityException if permission revoked, or other errors
             }
         }
-        return contactNumbers
+        return results
     }
 
     private fun loadCallLogs() {
@@ -238,17 +239,7 @@ class CallLogsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val callLogs = withContext(Dispatchers.IO) {
                 val results = mutableListOf<Triple<String, Long, Int>>()
-                appContext.contentResolver.query(
-                    CallLog.Calls.CONTENT_URI,
-                    arrayOf(
-                        CallLog.Calls.NUMBER,
-                        CallLog.Calls.DATE,
-                        CallLog.Calls.TYPE
-                    ),
-                    null,
-                    null,
-                    "${CallLog.Calls.DATE} DESC"
-                )?.use { cursor ->
+                queryCallLog(appContext.contentResolver)?.use { cursor ->
                     while (cursor.moveToNext()) {
                         val number = cursor.getString(0)
                         val date = cursor.getLong(1)
@@ -257,11 +248,11 @@ class CallLogsFragment : Fragment() {
                     }
                 }
 
-                val contactNumbers = if (hasContactsPermission()) {
+                val contactMap = if (hasContactsPermission()) {
                     val uniqueNumbers = results.map { it.first }.toSet()
-                    lookupContactNumbers(appContext, uniqueNumbers)
+                    lookupContacts(appContext, uniqueNumbers)
                 } else {
-                    emptySet()
+                    emptyMap()
                 }
 
                 results.map { (number, date, type) ->
@@ -269,7 +260,8 @@ class CallLogsFragment : Fragment() {
                         number = number,
                         date = date,
                         callType = type,
-                        isContact = number in contactNumbers
+                        isContact = contactMap.containsKey(number),
+                        contactName = contactMap[number]
                     )
                 }
             }
@@ -279,9 +271,42 @@ class CallLogsFragment : Fragment() {
         }
     }
 
+    private fun queryCallLog(resolver: ContentResolver) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val args = Bundle().apply {
+                putStringArray(
+                    ContentResolver.QUERY_ARG_SORT_COLUMNS,
+                    arrayOf(CallLog.Calls.DATE)
+                )
+                putInt(
+                    ContentResolver.QUERY_ARG_SORT_DIRECTION,
+                    ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+                )
+                putInt(ContentResolver.QUERY_ARG_LIMIT, CALL_LOG_LIMIT)
+            }
+            resolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.DATE, CallLog.Calls.TYPE),
+                args,
+                null
+            )
+        } else {
+            resolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.DATE, CallLog.Calls.TYPE),
+                null,
+                null,
+                "${CallLog.Calls.DATE} DESC LIMIT $CALL_LOG_LIMIT"
+            )
+        }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val CALL_LOG_LIMIT = 200
     }
 }
 
@@ -289,13 +314,13 @@ data class CallLogItem(
     val number: String,
     val date: Long,
     val callType: Int,
-    val isContact: Boolean
+    val isContact: Boolean,
+    val contactName: String?
 )
 
 class CallLogsAdapter(
     private val onItemClick: (String) -> Unit
 ) : ListAdapter<CallLogItem, CallLogsAdapter.ViewHolder>(CallLogDiffCallback()) {
-    private val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemCallLogBinding.inflate(
@@ -315,12 +340,21 @@ class CallLogsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: CallLogItem) {
-            val number = item.number.trim()
-            val (countryCode, phoneNumber) = PhoneNumberUtils.splitPhoneNumber(number)
+            val context = binding.root.context
+            val cleanedNumber = item.number.trim().replace(Regex("[^0-9+]"), "")
+            val (countryCode, phoneNumber) = PhoneNumberUtils.splitPhoneNumber(cleanedNumber)
 
             binding.countryCode.text = countryCode
+            binding.countryCode.isVisible = countryCode.isNotEmpty()
             binding.phoneNumber.text = phoneNumber
-            binding.callDate.text = dateFormat.format(Date(item.date))
+            binding.callDate.text = DateFormatter.format(context, item.date)
+
+            if (item.contactName != null) {
+                binding.contactName.text = item.contactName
+                binding.contactName.isVisible = true
+            } else {
+                binding.contactName.isVisible = false
+            }
 
             val (iconRes, descriptionRes) = when (item.callType) {
                 CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_incoming to R.string.call_type_incoming
@@ -329,15 +363,14 @@ class CallLogsAdapter(
                 else -> R.drawable.ic_call_incoming to R.string.call_type_incoming
             }
             binding.callTypeIcon.setImageResource(iconRes)
-            binding.callTypeIcon.contentDescription = binding.root.context.getString(descriptionRes)
 
-            val typeDesc = binding.root.context.getString(descriptionRes)
-            binding.root.contentDescription =
-                "$typeDesc from $countryCode $phoneNumber, ${binding.callDate.text}"
+            val typeDesc = context.getString(descriptionRes)
+            val identity = item.contactName ?: "$countryCode $phoneNumber".trim()
+            binding.root.contentDescription = "$typeDesc from $identity, ${binding.callDate.text}"
 
-            binding.openChatButton.setOnClickListener {
-                onItemClick(item.number)
-            }
+            val open = View.OnClickListener { onItemClick(item.number) }
+            binding.callLogCard.setOnClickListener(open)
+            binding.openChatButton.setOnClickListener(open)
         }
     }
 }

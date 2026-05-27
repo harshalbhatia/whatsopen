@@ -46,7 +46,7 @@ object WhatsAppLauncher {
 
     private fun isPackageInstalled(context: Context, packageName: String): Boolean {
         return try {
-            context.packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            context.packageManager.getPackageInfo(packageName, 0)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false

@@ -52,4 +52,10 @@
 
     <!-- Accessibility -->
     <string name="country_info_description">Country information for entered code</string>
+
+    <!-- App shortcuts -->
+    <string name="shortcut_paste_short">Paste &amp; Open</string>
+    <string name="shortcut_paste_long">Paste a number and open WhatsApp</string>
+    <string name="shortcut_call_logs_short">Call Logs</string>
+    <string name="shortcut_call_logs_long">Open recent calls</string>
 </resources>
