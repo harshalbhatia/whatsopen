@@ -3,13 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/navigation_call_logs">
+    app:startDestination="@id/navigation_clipboard">
 
+    <!--
+    CallLogsFragment was migrated to Compose in Task D.
+    The whole nav_graph.xml file will be deleted in Task H (cleanup phase).
     <fragment
         android:id="@+id/navigation_call_logs"
         android:name="com.example.whatsopen.CallLogsFragment"
         android:label="@string/nav_call_logs"
         tools:layout="@layout/fragment_call_logs" />
+    -->
 
     <fragment
         android:id="@+id/navigation_clipboard"
