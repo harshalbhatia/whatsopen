@@ -26,6 +26,17 @@
 
     <!-- Card layout -->
     <dimen name="card_padding">16dp</dimen>
-    <dimen name="card_margin_vertical">6dp</dimen>
+
+    <!-- Two-line list rows (Call Logs). Minimums only, so text never clips at large font sizes. -->
+    <dimen name="list_item_min_height">72dp</dimen>
+    <dimen name="list_item_padding_vertical">8dp</dimen>
+    <!-- Less than screen_padding: a trailing 48dp icon button's icon then lines up with the screen padding. -->
+    <dimen name="list_item_padding_end">12dp</dimen>
+    <dimen name="call_type_icon_size">16dp</dimen>
+    <dimen name="call_type_icon_spacing">4dp</dimen>
+    <dimen name="icon_button_size">48dp</dimen>
+    <!-- Empty, loading and permission messages on the Call Logs tab -->
+    <dimen name="message_padding_vertical">48dp</dimen>
+    <dimen name="message_icon_size">64dp</dimen>
 
 </resources>

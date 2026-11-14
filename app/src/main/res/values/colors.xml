@@ -58,4 +58,9 @@
     <color name="md_theme_dark_outlineVariant">#3F4945</color>
     <color name="md_theme_dark_surfaceContainer">#1D201F</color>
     <color name="md_theme_dark_surfaceContainerHigh">#272B29</color>
+
+    <!-- Call type icons on the Call Logs tab. values-night has lighter shades for dark backgrounds. -->
+    <color name="call_incoming">#2E7D32</color>
+    <color name="call_outgoing">#1565C0</color>
+    <color name="call_missed">#C62828</color>
 </resources>
