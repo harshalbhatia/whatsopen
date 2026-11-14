@@ -71,12 +71,17 @@ object WhatsAppLauncher {
      * Uses the remembered app if it's available. Otherwise, when both WhatsApp and
      * WhatsApp Business are available and [context] is an Activity, asks which to use;
      * without an Activity it uses WhatsApp. Shows a toast for every failure.
+     *
+     * When the result is [LaunchResult.ChoosingApp], [onChooserClosed] runs once the chooser
+     * closes, whether an app was picked (after it was started) or not, unless the Activity is
+     * destroyed first. It never runs for other results.
      */
     fun openChat(
         context: Context,
         phoneNumber: String,
         regionIso: String? = null,
         message: String? = null,
+        onChooserClosed: (() -> Unit)? = null,
     ): LaunchResult {
         val region = DefaultRegion.cleanIso(regionIso) ?: DefaultRegion.get(context)
         val e164 = PhoneNumbers.normalize(phoneNumber, region)
@@ -98,7 +103,7 @@ object WhatsAppLauncher {
             }
             is AppChoice.Use -> launch(context, uri, choice.apps)
             is AppChoice.Ask ->
-                if (activity != null && showChooser(activity, uri, choice.apps)) {
+                if (activity != null && showChooser(activity, uri, choice.apps, onChooserClosed)) {
                     LaunchResult.ChoosingApp
                 } else {
                     launch(context, uri, choice.apps)
@@ -194,7 +199,12 @@ object WhatsAppLauncher {
     }
 
     /** Shows the app chooser. Returns false if the dialog can't be shown (e.g. a non-Material theme). */
-    private fun showChooser(activity: Activity, uri: Uri, apps: List<WhatsAppApp>): Boolean {
+    private fun showChooser(
+        activity: Activity,
+        uri: Uri,
+        apps: List<WhatsAppApp>,
+        onClosed: (() -> Unit)?,
+    ): Boolean {
         return try {
             val builder = MaterialAlertDialogBuilder(activity)
             val binding = DialogChooseWhatsappBinding.inflate(LayoutInflater.from(builder.context))
@@ -210,6 +220,7 @@ object WhatsAppLauncher {
                 }
                 .setView(binding.root)
                 .setNegativeButton(android.R.string.cancel, null)
+                .setOnDismissListener { onClosed?.invoke() }
                 .show()
             true
         } catch (e: IllegalArgumentException) {

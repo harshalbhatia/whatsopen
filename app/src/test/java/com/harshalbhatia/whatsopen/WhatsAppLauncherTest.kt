@@ -301,6 +301,54 @@ class WhatsAppLauncherTest {
     }
 
     @Test
+    fun `onChooserClosed runs when the chooser is cancelled`() {
+        install(WhatsAppApp.CONSUMER)
+        install(WhatsAppApp.BUSINESS)
+        val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        var closed = 0
+
+        WhatsAppLauncher.openChat(activity, "+14155552671", "US", onChooserClosed = { closed++ })
+        assertEquals(0, closed)
+        (ShadowDialog.getLatestDialog() as AlertDialog).cancel()
+        ShadowLooper.idleMainLooper()
+
+        assertEquals(1, closed)
+        assertNull(shadowOf(activity).nextStartedActivity)
+    }
+
+    @Test
+    fun `onChooserClosed runs after the picked app was started`() {
+        install(WhatsAppApp.CONSUMER)
+        install(WhatsAppApp.BUSINESS)
+        val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        var startedWhenClosed: Intent? = null
+
+        WhatsAppLauncher.openChat(activity, "+14155552671", "US", onChooserClosed = {
+            startedWhenClosed = shadowOf(activity).peekNextStartedActivity()
+        })
+        val list = (ShadowDialog.getLatestDialog() as AlertDialog).listView
+        list.performItemClick(list.adapter.getView(0, null, list), 0, 0)
+        ShadowLooper.idleMainLooper()
+
+        assertEquals("com.whatsapp", startedWhenClosed?.`package`)
+    }
+
+    @Test
+    fun `onChooserClosed does not run when no chooser is shown`() {
+        install(WhatsAppApp.CONSUMER)
+        val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        var closed = false
+
+        assertEquals(
+            LaunchResult.Launched,
+            WhatsAppLauncher.openChat(activity, "+14155552671", "US", onChooserClosed = { closed = true })
+        )
+        ShadowLooper.idleMainLooper()
+
+        assertFalse(closed)
+    }
+
+    @Test
     fun `clearRememberedApp forgets the choice`() {
         app.getSharedPreferences("whatsapp_launcher", Context.MODE_PRIVATE).edit()
             .putString("remembered_app", WhatsAppApp.BUSINESS.packageName).commit()

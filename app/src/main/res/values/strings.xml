@@ -58,6 +58,16 @@
     <string name="remember_my_choice">Remember my choice</string>
     <string name="whatsapp_app_name" translatable="false">WhatsApp</string>
     <string name="whatsapp_business_app_name" translatable="false">WhatsApp Business</string>
+    <string name="error_link_without_number">That link doesn\'t contain a valid phone number</string>
+    <!-- Shown when Paste & Open (shortcut or Quick Settings tile) finds nothing on the clipboard. -->
+    <string name="error_clipboard_empty">Clipboard is empty</string>
+
+    <!-- Shown in the menu that appears when text is selected in another app (next to Copy and Share).
+         Opens a WhatsApp chat with the phone number in the selected text. -->
+    <string name="process_text_label">WhatsApp chat</string>
+
+    <!-- Quick Settings tile: opens a WhatsApp chat with the phone number on the clipboard. Keep it short. -->
+    <string name="tile_paste_and_chat">Paste &amp; chat</string>
 
     <!-- Accessibility -->
     <string name="country_info_description">Country information for entered code</string>
