@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- These values must match the Kotlin constants: the Paste & Open target and action are
+     OpenChatActivity.PASTE_AND_OPEN_ALIAS and ACTION_PASTE_AND_OPEN; "open_tab" and
+     "call_logs" are MainActivity.EXTRA_OPEN_TAB and TAB_CALL_LOGS. -->
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:shortcutId="paste_and_open"
@@ -7,14 +10,9 @@
         android:shortcutShortLabel="@string/shortcut_paste_short"
         android:shortcutLongLabel="@string/shortcut_paste_long">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="com.harshalbhatia.whatsopen.action.PASTE_AND_OPEN"
             android:targetPackage="com.harshalbhatia.whatsopen"
-            android:targetClass="com.harshalbhatia.whatsopen.MainActivity">
-            <extra
-                android:name="open_tab"
-                android:value="clipboard" />
-        </intent>
-        <categories android:name="android.shortcut.conversation" />
+            android:targetClass="com.harshalbhatia.whatsopen.PasteAndOpenActivity" />
     </shortcut>
 
     <shortcut
@@ -31,6 +29,5 @@
                 android:name="open_tab"
                 android:value="call_logs" />
         </intent>
-        <categories android:name="android.shortcut.conversation" />
     </shortcut>
 </shortcuts>

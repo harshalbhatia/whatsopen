@@ -166,6 +166,16 @@ class IncomingIntentParserTest {
         assertNull(IncomingIntentParser.extractPhoneNumber(processText("+919876543210 +14155552671"), "US"))
     }
 
+    // --- singleNumber ---
+
+    @Test
+    fun `singleNumber returns the number only when the text holds exactly one`() {
+        assertEquals("+14155552671", IncomingIntentParser.singleNumber("Call +1 415 555 2671 today", "US"))
+        assertEquals("+14155552671", IncomingIntentParser.singleNumber("+14155552671 or (415) 555-2671", "US"))
+        assertNull(IncomingIntentParser.singleNumber("+919876543210 +14155552671", "US"))
+        assertNull(IncomingIntentParser.singleNumber("no numbers here", "US"))
+    }
+
     // --- sharedText ---
 
     @Test

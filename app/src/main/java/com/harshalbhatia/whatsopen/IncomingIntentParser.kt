@@ -18,11 +18,17 @@ object IncomingIntentParser {
         if (intent == null) return null
         return when (intent.action) {
             Intent.ACTION_VIEW, Intent.ACTION_DIAL -> fromTelUri(intent.data, defaultRegion)
-            Intent.ACTION_SEND, Intent.ACTION_PROCESS_TEXT ->
-                sharedText(intent)?.let { PhoneNumbers.extract(it, defaultRegion).singleOrNull() }
+            Intent.ACTION_SEND, Intent.ACTION_PROCESS_TEXT -> sharedText(intent)?.let { singleNumber(it, defaultRegion) }
             else -> null
         }
     }
+
+    /**
+     * The number in [text], as E.164, if it holds exactly one valid number (the same number
+     * twice counts once). Null for no numbers or several.
+     */
+    fun singleNumber(text: CharSequence, defaultRegion: String?): String? =
+        PhoneNumbers.extract(text, defaultRegion).singleOrNull()
 
     /**
      * The text of a SEND or PROCESS_TEXT intent, cut to [PhoneNumbers.MAX_TEXT_CHARS]
