@@ -61,6 +61,8 @@ class FirstFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 updateCountryLabel()
                 binding.countryCodeInputLayout.error = null
+                // "Not a valid phone number" was about the number in this country; it may be valid now.
+                binding.phoneInputLayout.error = null
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -246,6 +248,9 @@ class FirstFragment : Fragment() {
          * that isn't a valid number. [national] is read as a number of [region] first, so trunk
          * prefixes work ("07911 123456" with 44 gives +447911123456); failing that, as
          * "+[callingCode][national]", which also accepts numbers the platform's metadata rejects.
+         * The fallback refuses a number starting with 0: whether that 0 is a trunk prefix
+         * (07700… in the UK) or part of the number (06… in Italy) is then unknown, and guessing
+         * could open a stranger's chat. Typed with "+" instead, such a number is accepted.
          */
         internal fun chatNumber(callingCode: String, national: String, region: String?): String? {
             if (region != null) {
@@ -254,7 +259,9 @@ class FirstFragment : Fragment() {
                     ?.takeIf { it.startsWith("+$callingCode") }
                     ?.let { return it }
             }
-            return PhoneNumbers.normalize("+$callingCode${asciiDigits(national)}", region)
+            val digits = asciiDigits(national)
+            if (digits.startsWith("0")) return null
+            return PhoneNumbers.normalize("+$callingCode$digits", region)
         }
 
         /** Whether [text] starts with "+" or "00", i.e. includes its country code. */

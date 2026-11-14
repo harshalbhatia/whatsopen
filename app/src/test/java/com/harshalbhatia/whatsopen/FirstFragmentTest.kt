@@ -180,6 +180,18 @@ class FirstFragmentTest {
     }
 
     @Test
+    fun `editing country code clears an invalid-number error`() {
+        launch().withBinding { binding, _ ->
+            binding.countryCodeInput.setText("1")
+            binding.phoneInput.setText("07911 123456")
+            binding.openWhatsappButton.performClick()
+            assertEquals(app.getString(R.string.error_invalid_phone_number), binding.phoneInputLayout.error)
+            binding.countryCodeInput.setText("44")
+            assertNull(binding.phoneInputLayout.error)
+        }
+    }
+
+    @Test
     fun `submit with an unassigned code puts the error on the code`() {
         launch().withBinding { binding, _ ->
             binding.countryCodeInput.setText("999")
@@ -387,6 +399,17 @@ class FirstFragmentTest {
         // A repeated trunk "1" is dropped, never kept as a 12-digit +1 number.
         assertEquals("+14165550123", FirstFragment.chatNumber("1", "1 416 555 0123", "US"))
         assertNull(FirstFragment.chatNumber("1", "1 555 123 4567", "US"))
+    }
+
+    @Test
+    fun `chatNumber refuses a leading 0 it can't validate, rather than guess what the 0 is`() {
+        // Ofcom's drama range, which the platform rejects. The 0 used to be kept: +4407700900123.
+        assertNull(FirstFragment.chatNumber("44", "07700 900123", "GB"))
+        assertEquals("+447700900123", FirstFragment.chatNumber("44", "7700 900123", "GB"))
+        // In Italy the 0 is part of the number, so dropping it would be just as wrong.
+        assertNull(FirstFragment.chatNumber("39", "012 0123456", "IT"))
+        // A UK number typed under +1 isn't turned into a US one.
+        assertNull(FirstFragment.chatNumber("1", "07911 123456", "US"))
     }
 
     // --- Accessibility ---

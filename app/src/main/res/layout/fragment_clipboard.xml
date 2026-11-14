@@ -1,168 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- The page scrolls; the Paste card stays at the bottom, within reach of a thumb. -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/clipboard_suggestion_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/content"
-            style="@style/Widget.WhatsOpen.ContentColumn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/screen_padding"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/content"
+                style="@style/Widget.WhatsOpen.ContentColumn"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/clipboard_title"
-                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                android:padding="@dimen/screen_padding"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_title_subtitle"
-                android:text="@string/clipboard_subtitle"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="?android:textColorSecondary"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title" />
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/clipboard_title"
+                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Offered when the clipboard has text. The clipboard is only read when Paste is tapped. -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/clipboard_suggestion"
-                style="@style/Widget.Material3.CardView.Filled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_subtitle_content"
-                android:visibility="gone"
-                app:cardCornerRadius="@dimen/corner_radius_card"
-                app:layout_constraintTop_toBottomOf="@id/subtitle">
+                <TextView
+                    android:id="@+id/subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_title_subtitle"
+                    android:text="@string/clipboard_subtitle"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="?android:textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title" />
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/numbers_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/card_padding">
+                    android:hint="@string/clipboard_hint"
+                    app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
+                    app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
+                    app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
+                    app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
+                    app:endIconContentDescription="@string/paste"
+                    app:endIconDrawable="@drawable/ic_content_paste"
+                    app:endIconMode="custom"
+                    app:helperText="@string/clipboard_helper_text"
+                    app:layout_constraintTop_toBottomOf="@id/subtitle"
+                    android:layout_marginTop="@dimen/spacing_subtitle_content">
+
+                    <!-- Grows from 3 to 8 lines, then scrolls. The length limit is set in code. -->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/numbers_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:maxLines="8"
+                        android:minLines="3"
+                        android:scrollbars="vertical" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- "3 numbers found". Announced when it changes. -->
+                <TextView
+                    android:id="@+id/results_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_between_inputs"
+                    android:accessibilityLiveRegion="polite"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?android:textColorSecondary"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/numbers_input_layout" />
+
+                <!-- The number, when exactly one was found. -->
+                <TextView
+                    android:id="@+id/single_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_title_subtitle"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/results_count" />
+
+                <!-- One chip per number, when several were found. -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/numbers_chip_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_title_subtitle"
+                    android:visibility="gone"
+                    app:chipSpacingHorizontal="@dimen/chip_spacing"
+                    app:layout_constraintTop_toBottomOf="@id/single_number" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/process_numbers_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_input_button"
+                    android:minHeight="@dimen/button_min_height"
+                    android:text="@string/open_in_whatsapp"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_whatsapp"
+                    app:layout_constraintTop_toBottomOf="@id/numbers_chip_group" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Lines the card up with the column above. Has no height while the card is hidden. -->
+    <FrameLayout
+        android:id="@+id/clipboard_suggestion_container"
+        style="@style/Widget.WhatsOpen.ContentColumn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Offered when the clipboard has text. The clipboard is only read when the card is tapped. -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/clipboard_suggestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_between_inputs"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:cardBackgroundColor="?attr/colorSecondaryContainer"
+            app:cardCornerRadius="@dimen/corner_radius_card"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/button_min_height"
+                android:orientation="horizontal"
+                android:padding="@dimen/card_padding">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_content_paste"
+                    app:tint="?attr/colorOnSecondaryContainer" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/card_padding"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/clipboard_suggestion_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/clipboard_suggestion_title"
-                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSecondaryContainer" />
 
                     <TextView
                         android:id="@+id/clipboard_suggestion_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_title_subtitle"
+                        android:layout_marginTop="2dp"
                         android:text="@string/clipboard_suggestion_text"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:textColorSecondary" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/clipboard_paste_button"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="@dimen/spacing_title_subtitle"
-                        android:text="@string/paste"
-                        app:icon="@drawable/ic_content_paste" />
+                        android:textColor="?attr/colorOnSecondaryContainer" />
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/numbers_input_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_between_inputs"
-                android:hint="@string/clipboard_hint"
-                app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
-                app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
-                app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
-                app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
-                app:endIconContentDescription="@string/paste"
-                app:endIconDrawable="@drawable/ic_content_paste"
-                app:endIconMode="custom"
-                app:helperText="@string/clipboard_helper_text"
-                app:layout_constraintTop_toBottomOf="@id/clipboard_suggestion"
-                app:layout_goneMarginTop="@dimen/spacing_subtitle_content">
+        </com.google.android.material.card.MaterialCardView>
 
-                <!-- Grows from 3 to 8 lines, then scrolls. The length limit is set in code. -->
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/numbers_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top|start"
-                    android:inputType="textMultiLine"
-                    android:maxLines="8"
-                    android:minLines="3"
-                    android:scrollbars="vertical" />
+    </FrameLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- "3 numbers found". Announced when it changes. -->
-            <TextView
-                android:id="@+id/results_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_between_inputs"
-                android:accessibilityLiveRegion="polite"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:textColorSecondary"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/numbers_input_layout" />
-
-            <!-- The number, when exactly one was found. -->
-            <TextView
-                android:id="@+id/single_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_title_subtitle"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/results_count" />
-
-            <!-- One chip per number, when several were found. -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/numbers_chip_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_title_subtitle"
-                android:visibility="gone"
-                app:chipSpacingHorizontal="@dimen/chip_spacing"
-                app:layout_constraintTop_toBottomOf="@id/single_number" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/process_numbers_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_input_button"
-                android:minHeight="@dimen/button_min_height"
-                android:text="@string/open_in_whatsapp"
-                android:textAllCaps="false"
-                app:icon="@drawable/ic_whatsapp"
-                app:layout_constraintTop_toBottomOf="@id/numbers_chip_group" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

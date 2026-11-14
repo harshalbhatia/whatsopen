@@ -180,7 +180,7 @@
     <string name="process_text_label">WhatsApp chat</string>
 
     <!-- Quick Settings tile: opens a WhatsApp chat with the phone number on the clipboard. Keep it short. -->
-    <string name="tile_paste_and_chat">Paste &amp; chat</string>
+    <string name="tile_paste_and_open">Paste &amp; Open</string>
 
     <!-- Accessibility -->
     <!-- Read by screen readers for the country shown next to the country code field.

@@ -235,6 +235,37 @@ class CallLogsFragmentTest {
     }
 
     @Test
+    fun `a call logged while the tab shows appears without leaving the tab`() {
+        val scenario = launchWithCalls()
+        scenario.withItems { _, items -> assertEquals(listOf("Mom", "+1 415-555-2671"), items.rowTexts()) }
+
+        // Declined from its notification: the app is never paused, so only the provider says so.
+        provider.rows = listOf(callRow("+33612345678", date = 30, type = CallLog.Calls.REJECTED_TYPE, name = "Claire")) +
+            provider.rows!!
+        app.contentResolver.notifyChange(CallLog.Calls.CONTENT_URI, null)
+        scenario.withItems { _, items -> assertEquals(listOf("Claire", "Mom", "+1 415-555-2671"), items.rowTexts()) }
+    }
+
+    @Test
+    fun `watches the call log only while the tab shows, and only with the permission`() {
+        val observers = { shadowOf(app.contentResolver).getContentObservers(CallLog.Calls.CONTENT_URI) }
+        val scenario = launch()
+        scenario.withItems { _, _ -> assertTrue(observers().isEmpty()) }
+
+        scenario.moveToState(Lifecycle.State.STARTED)
+        grant()
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.withItems { _, _ -> assertEquals(1, observers().size) }
+
+        scenario.moveToState(Lifecycle.State.STARTED)
+        assertTrue(observers().isEmpty())
+        val queries = provider.queries
+        app.contentResolver.notifyChange(CallLog.Calls.CONTENT_URI, null)
+        ShadowLooper.idleMainLooper()
+        assertEquals(queries, provider.queries)
+    }
+
+    @Test
     fun `manifest asks for the call log but not contacts`() {
         val info = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS)
         val permissions = info.requestedPermissions.orEmpty().toList()

@@ -8,9 +8,13 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.Settings
 import android.telecom.TelecomManager
@@ -53,6 +57,17 @@ class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
     private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         refresh()
     }
+
+    /**
+     * Reloads the list when a call is logged while the tab is showing. A call declined from its
+     * notification doesn't pause the app, so onResume alone would miss it.
+     */
+    private val callLogObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            if (isResumed) refresh()
+        }
+    }
+    private var observingCallLog = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,7 +116,10 @@ class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
         when {
             !context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY) -> viewModel.showNoTelephony()
             ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) ==
-                PackageManager.PERMISSION_GRANTED -> viewModel.load()
+                PackageManager.PERMISSION_GRANTED -> {
+                viewModel.load()
+                if (isResumed) observeCallLog()
+            }
             // Android shows no rationale before the first request, nor after "don't ask again";
             // only the second means a request would be refused without asking.
             else -> viewModel.showNeedsPermission(
@@ -109,6 +127,26 @@ class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
                     !shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)
             )
         }
+    }
+
+    /** Watches the call log until [onPause]. Only called with the permission, which watching needs. */
+    private fun observeCallLog() {
+        if (observingCallLog) return
+        observingCallLog = try {
+            requireContext().contentResolver.registerContentObserver(CallLog.Calls.CONTENT_URI, true, callLogObserver)
+            true
+        } catch (e: SecurityException) {
+            // Revoked in between; onResume checks again.
+            false
+        }
+    }
+
+    override fun onPause() {
+        if (observingCallLog) {
+            requireContext().contentResolver.unregisterContentObserver(callLogObserver)
+            observingCallLog = false
+        }
+        super.onPause()
     }
 
     override fun onFilterChanged(filter: CallLogFilter) = viewModel.setFilter(filter)

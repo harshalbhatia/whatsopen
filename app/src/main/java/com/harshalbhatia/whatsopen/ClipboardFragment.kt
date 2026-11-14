@@ -72,7 +72,6 @@ class ClipboardFragment : Fragment() {
 
         ViewCompat.setAccessibilityPaneTitle(view, getString(R.string.nav_clipboard))
         ViewCompat.setAccessibilityHeading(binding.title, true)
-        ViewCompat.setAccessibilityHeading(binding.clipboardSuggestionTitle, true)
 
         region = DefaultRegion.get(requireContext())
 
@@ -91,7 +90,14 @@ class ClipboardFragment : Fragment() {
         allowScrollingInside(binding.numbersInput)
 
         binding.numbersInputLayout.setEndIconOnClickListener { paste() }
-        binding.clipboardPasteButton.setOnClickListener { paste() }
+        // The whole card is the button. Screen readers say "double-tap to paste".
+        binding.clipboardSuggestion.setOnClickListener { paste() }
+        ViewCompat.replaceAccessibilityAction(
+            binding.clipboardSuggestion,
+            AccessibilityActionCompat.ACTION_CLICK,
+            getString(R.string.paste),
+            null,
+        )
 
         binding.processNumbersButton.setOnClickListener {
             showResults()
