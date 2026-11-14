@@ -26,11 +26,13 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val userRegion = DefaultRegion.get(requireContext())
+
         binding.countryCodeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val digits = s?.toString().orEmpty().filter { it.isDigit() }
-                val info = COUNTRY_DATA[digits]
+                val info = CountryData.forCallingCode(digits, userRegion)
                 binding.countryInfo.text = if (info != null) "${info.flag}  ${info.name}" else null
                 binding.countryCodeInputLayout.error = null
             }
@@ -72,7 +74,7 @@ class FirstFragment : Fragment() {
             }
 
             if (!hasError) {
-                WhatsAppLauncher.openChat(requireContext(), countryCode + phoneNumber)
+                WhatsAppLauncher.openChat(requireContext(), "+$countryCode$phoneNumber")
             }
         }
     }

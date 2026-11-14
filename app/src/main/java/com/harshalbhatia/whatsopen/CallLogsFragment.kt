@@ -342,7 +342,7 @@ class CallLogsAdapter(
         fun bind(item: CallLogItem) {
             val context = binding.root.context
             val cleanedNumber = item.number.trim().replace(Regex("[^0-9+]"), "")
-            val (countryCode, phoneNumber) = PhoneNumberUtils.splitPhoneNumber(cleanedNumber)
+            val (countryCode, phoneNumber) = PhoneNumbers.splitPhoneNumber(cleanedNumber)
 
             binding.countryCode.text = countryCode
             binding.countryCode.isVisible = countryCode.isNotEmpty()
