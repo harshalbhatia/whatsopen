@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds install beside the release app, so the places both appear say which is which. -->
+<resources>
+    <string name="app_name">WhatsOpen Debug</string>
+    <string name="process_text_label">WhatsApp chat (debug)</string>
+    <string name="tile_paste_and_open">Paste &amp; Open (debug)</string>
+</resources>

@@ -32,6 +32,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Its own package, so it installs beside the release app from F-Droid. Static
+            // shortcuts name their package, so src/debug/res/xml/shortcuts.xml repeats them.
+            applicationIdSuffix = ".debug"
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The main shortcuts.xml, aimed at the debug package (applicationIdSuffix ".debug").
+     Keep the two the same otherwise; MainActivityTest checks they are. -->
+<!-- Only read on API 25+, where app shortcuts exist. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="25">
+    <shortcut
+        android:shortcutId="paste_and_open"
+        android:enabled="true"
+        android:icon="@drawable/ic_content_paste"
+        android:shortcutShortLabel="@string/shortcut_paste_short"
+        android:shortcutLongLabel="@string/shortcut_paste_long">
+        <intent
+            android:action="com.harshalbhatia.whatsopen.action.PASTE_AND_OPEN"
+            android:targetPackage="com.harshalbhatia.whatsopen.debug"
+            android:targetClass="com.harshalbhatia.whatsopen.PasteAndOpenActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_call_logs"
+        android:enabled="true"
+        android:icon="@drawable/ic_call_log"
+        android:shortcutShortLabel="@string/shortcut_call_logs_short"
+        android:shortcutLongLabel="@string/shortcut_call_logs_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harshalbhatia.whatsopen.debug"
+            android:targetClass="com.harshalbhatia.whatsopen.MainActivity">
+            <extra
+                android:name="open_tab"
+                android:value="call_logs" />
+        </intent>
+    </shortcut>
+</shortcuts>
