@@ -12,6 +12,7 @@ import android.os.Looper
 import android.telephony.TelephonyManager
 import android.text.InputFilter
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
@@ -338,5 +339,16 @@ class ClipboardFragmentTest {
         scenario.moveToState(Lifecycle.State.STARTED)
         scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.withBinding { binding, _ -> assertEquals("edited", binding.numbersInput.text.toString()) }
+    }
+
+    // --- Accessibility ---
+
+    @Test
+    fun `the tab names itself to accessibility services, and its titles are headings`() {
+        launch().withBinding { binding, _ ->
+            assertEquals(app.getString(R.string.nav_clipboard), ViewCompat.getAccessibilityPaneTitle(binding.root))
+            assertTrue(ViewCompat.isAccessibilityHeading(binding.title))
+            assertTrue(ViewCompat.isAccessibilityHeading(binding.clipboardSuggestionTitle))
+        }
     }
 }

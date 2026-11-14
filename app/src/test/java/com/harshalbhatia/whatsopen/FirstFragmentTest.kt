@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
@@ -386,5 +387,16 @@ class FirstFragmentTest {
         // A repeated trunk "1" is dropped, never kept as a 12-digit +1 number.
         assertEquals("+14165550123", FirstFragment.chatNumber("1", "1 416 555 0123", "US"))
         assertNull(FirstFragment.chatNumber("1", "1 555 123 4567", "US"))
+    }
+
+    // --- Accessibility ---
+
+    @Test
+    fun `the tab names itself to accessibility services, and its title is a heading`() {
+        launch().withBinding { binding, _ ->
+            assertEquals(app.getString(R.string.nav_by_number), ViewCompat.getAccessibilityPaneTitle(binding.root))
+            assertTrue(ViewCompat.isAccessibilityHeading(binding.title))
+            assertFalse(ViewCompat.isAccessibilityHeading(binding.subtitle))
+        }
     }
 }

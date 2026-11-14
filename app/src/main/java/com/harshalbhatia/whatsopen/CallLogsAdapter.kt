@@ -121,6 +121,7 @@ class CallLogsAdapter(private val callbacks: Callbacks) : RecyclerView.Adapter<R
         private var settingChips = false
 
         init {
+            ViewCompat.setAccessibilityHeading(binding.title, true)
             listOf(binding.chipIncoming, binding.chipMissed, binding.chipNonContactsOnly).forEach { chip ->
                 chip.setOnCheckedChangeListener { _, _ ->
                     if (!settingChips) {

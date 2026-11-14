@@ -23,10 +23,13 @@
         tools:targetApi="33">
         <!-- taskAffinity="": another app's activity can't claim this task by declaring the
              app's affinity (StrandHogg-style task hijacking). -->
+        <!-- adjustResize: as the activity is edge-to-edge, the window is neither resized nor panned
+             for the keyboard; its height arrives as an inset, which MainActivity applies. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:taskAffinity="">
+            android:taskAffinity=""
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

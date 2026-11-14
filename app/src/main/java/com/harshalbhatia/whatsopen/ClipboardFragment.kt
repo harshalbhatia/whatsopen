@@ -70,6 +70,10 @@ class ClipboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ViewCompat.setAccessibilityPaneTitle(view, getString(R.string.nav_clipboard))
+        ViewCompat.setAccessibilityHeading(binding.title, true)
+        ViewCompat.setAccessibilityHeading(binding.clipboardSuggestionTitle, true)
+
         region = DefaultRegion.get(requireContext())
 
         binding.numbersInput.filters = arrayOf(InputFilter.LengthFilter(PhoneNumbers.MAX_TEXT_CHARS))

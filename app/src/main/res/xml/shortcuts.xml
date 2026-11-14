@@ -2,7 +2,10 @@
 <!-- These values must match the Kotlin constants: the Paste & Open target and action are
      OpenChatActivity.PASTE_AND_OPEN_ALIAS and ACTION_PASTE_AND_OPEN; "open_tab" and
      "call_logs" are MainActivity.EXTRA_OPEN_TAB and TAB_CALL_LOGS. -->
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Only read on API 25+, where app shortcuts exist. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="25">
     <shortcut
         android:shortcutId="paste_and_open"
         android:enabled="true"

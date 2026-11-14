@@ -17,6 +17,7 @@ import android.view.View
 import android.view.View.MeasureSpec
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -38,6 +39,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 
 @RunWith(RobolectricTestRunner::class)
@@ -437,5 +439,43 @@ class CallLogsFragmentTest {
         assertNotNull(scenario.openMenu("Mom"))
         scenario.moveToState(Lifecycle.State.CREATED)
         scenario.onFragment { assertNull(it.rowMenu) }
+    }
+
+    // Layout and accessibility
+
+    /** The list as the fragment laid it out in the window, without [withItems]'s fixed size. */
+    private fun FragmentScenario<CallLogsFragment>.laidOutList(): RecyclerView {
+        lateinit var list: RecyclerView
+        onFragment { fragment ->
+            ShadowLooper.idleMainLooper()
+            list = fragment.requireView().findViewById(R.id.recycler_view)
+        }
+        return list
+    }
+
+    @Test
+    @Config(qualifiers = "w900dp-h600dp")
+    fun `on a wide window the list spans it and centres the rows`() {
+        val list = launchWithCalls().laidOutList()
+        assertEquals(app.resources.displayMetrics.widthPixels, list.width)
+        // (900dp - content_max_width 600dp) / 2, at mdpi.
+        assertEquals(150, list.paddingLeft)
+        assertEquals(150, list.paddingRight)
+    }
+
+    @Test
+    fun `on a phone the rows use the whole width`() {
+        val list = launchWithCalls().laidOutList()
+        assertEquals(app.resources.displayMetrics.widthPixels, list.width)
+        assertEquals(0, list.paddingLeft)
+        assertEquals(0, list.paddingRight)
+    }
+
+    @Test
+    fun `the tab names itself to accessibility services, and its title is a heading`() {
+        launchWithCalls().withItems { fragment, items ->
+            assertEquals(app.getString(R.string.nav_call_logs), ViewCompat.getAccessibilityPaneTitle(fragment.requireView()))
+            assertTrue(ViewCompat.isAccessibilityHeading(items.firstNotNullOf { it.findViewById<TextView>(R.id.title) }))
+        }
     }
 }

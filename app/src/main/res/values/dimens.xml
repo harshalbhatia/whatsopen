@@ -2,7 +2,8 @@
 <resources>
     <!-- Screen layout -->
     <dimen name="screen_padding">24dp</dimen>
-    <!-- Widest a tab's content gets on tablets, foldables and in landscape; see Widget.WhatsOpen.ContentColumn. -->
+    <!-- Widest a tab's content gets on tablets, foldables and in landscape; see Widget.WhatsOpen.ContentColumn
+         and CallLogsFragment. -->
     <dimen name="content_max_width">600dp</dimen>
 
     <!-- Spacing -->

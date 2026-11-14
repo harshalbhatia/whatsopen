@@ -1,63 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-
-    <!-- Material3 Light Theme - WhatsApp Green Palette -->
-    <color name="md_theme_light_primary">#006B5E</color>
-    <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">#74F8DC</color>
-    <color name="md_theme_light_onPrimaryContainer">#00201B</color>
-    <color name="md_theme_light_secondary">#4B635C</color>
-    <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#CDE8DF</color>
-    <color name="md_theme_light_onSecondaryContainer">#07201A</color>
-    <color name="md_theme_light_tertiary">#416278</color>
-    <color name="md_theme_light_onTertiary">#FFFFFF</color>
-    <color name="md_theme_light_tertiaryContainer">#C5E7FF</color>
-    <color name="md_theme_light_onTertiaryContainer">#001E2F</color>
-    <color name="md_theme_light_error">#BA1A1A</color>
-    <color name="md_theme_light_onError">#FFFFFF</color>
-    <color name="md_theme_light_errorContainer">#FFDAD6</color>
-    <color name="md_theme_light_onErrorContainer">#410002</color>
-    <color name="md_theme_light_background">#FAFDFB</color>
-    <color name="md_theme_light_onBackground">#191C1B</color>
-    <color name="md_theme_light_surface">#FAFDFB</color>
-    <color name="md_theme_light_onSurface">#191C1B</color>
-    <color name="md_theme_light_surfaceVariant">#DAE5E0</color>
-    <color name="md_theme_light_onSurfaceVariant">#3F4945</color>
-    <color name="md_theme_light_outline">#6F7975</color>
-    <color name="md_theme_light_outlineVariant">#BEC9C4</color>
-    <color name="md_theme_light_surfaceContainer">#EEF1EF</color>
-    <color name="md_theme_light_surfaceContainerHigh">#E8EBE9</color>
-
-    <!-- Dark theme fallbacks (overridden by values-night) -->
-    <color name="md_theme_dark_primary">#54DBC0</color>
-    <color name="md_theme_dark_onPrimary">#003730</color>
-    <color name="md_theme_dark_primaryContainer">#005046</color>
-    <color name="md_theme_dark_onPrimaryContainer">#74F8DC</color>
-    <color name="md_theme_dark_secondary">#B1CCC3</color>
-    <color name="md_theme_dark_onSecondary">#1D352E</color>
-    <color name="md_theme_dark_secondaryContainer">#334B44</color>
-    <color name="md_theme_dark_onSecondaryContainer">#CDE8DF</color>
-    <color name="md_theme_dark_tertiary">#A9CBE3</color>
-    <color name="md_theme_dark_onTertiary">#0E3447</color>
-    <color name="md_theme_dark_tertiaryContainer">#294A5F</color>
-    <color name="md_theme_dark_onTertiaryContainer">#C5E7FF</color>
-    <color name="md_theme_dark_error">#FFB4AB</color>
-    <color name="md_theme_dark_onError">#690005</color>
-    <color name="md_theme_dark_errorContainer">#93000A</color>
-    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
-    <color name="md_theme_dark_background">#191C1B</color>
-    <color name="md_theme_dark_onBackground">#E1E3E0</color>
-    <color name="md_theme_dark_surface">#111413</color>
-    <color name="md_theme_dark_onSurface">#E1E3E0</color>
-    <color name="md_theme_dark_surfaceVariant">#3F4945</color>
-    <color name="md_theme_dark_onSurfaceVariant">#BEC9C4</color>
-    <color name="md_theme_dark_outline">#899390</color>
-    <color name="md_theme_dark_outlineVariant">#3F4945</color>
-    <color name="md_theme_dark_surfaceContainer">#1D201F</color>
-    <color name="md_theme_dark_surfaceContainerHigh">#272B29</color>
+    <!-- Material 3 baseline from seed #006B5E (tonal spot, standard contrast); values-night has the
+         dark scheme. Used when dynamic colour (Android 12+) is unavailable. -->
+    <color name="md_theme_primary">#006B5E</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#9FF2E1</color>
+    <color name="md_theme_onPrimaryContainer">#00201B</color>
+    <color name="md_theme_inversePrimary">#83D5C5</color>
+    <color name="md_theme_primaryFixed">#9FF2E1</color>
+    <color name="md_theme_primaryFixedDim">#83D5C5</color>
+    <color name="md_theme_onPrimaryFixed">#00201B</color>
+    <color name="md_theme_onPrimaryFixedVariant">#005046</color>
+    <color name="md_theme_secondary">#4A635E</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#CDE8E1</color>
+    <color name="md_theme_onSecondaryContainer">#06201B</color>
+    <color name="md_theme_secondaryFixed">#CDE8E1</color>
+    <color name="md_theme_secondaryFixedDim">#B1CCC5</color>
+    <color name="md_theme_onSecondaryFixed">#06201B</color>
+    <color name="md_theme_onSecondaryFixedVariant">#334B46</color>
+    <color name="md_theme_tertiary">#446279</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#CAE6FF</color>
+    <color name="md_theme_onTertiaryContainer">#001E30</color>
+    <color name="md_theme_tertiaryFixed">#CAE6FF</color>
+    <color name="md_theme_tertiaryFixedDim">#ACCAE5</color>
+    <color name="md_theme_onTertiaryFixed">#001E30</color>
+    <color name="md_theme_onTertiaryFixedVariant">#2C4A60</color>
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
+    <color name="md_theme_onErrorContainer">#410002</color>
+    <color name="md_theme_background">#F4FBF8</color>
+    <color name="md_theme_onBackground">#171D1B</color>
+    <color name="md_theme_surface">#F4FBF8</color>
+    <color name="md_theme_onSurface">#171D1B</color>
+    <color name="md_theme_surfaceVariant">#DAE5E1</color>
+    <color name="md_theme_onSurfaceVariant">#3F4946</color>
+    <color name="md_theme_outline">#6D7774</color>
+    <color name="md_theme_outlineVariant">#BEC9C5</color>
+    <color name="md_theme_inverseSurface">#2B3230</color>
+    <color name="md_theme_inverseOnSurface">#ECF2EF</color>
+    <color name="md_theme_surfaceDim">#D5DBD8</color>
+    <color name="md_theme_surfaceBright">#F4FBF8</color>
+    <color name="md_theme_surfaceContainerLowest">#FFFFFF</color>
+    <color name="md_theme_surfaceContainerLow">#EFF5F2</color>
+    <color name="md_theme_surfaceContainer">#E9EFEC</color>
+    <color name="md_theme_surfaceContainerHigh">#E3EAE7</color>
+    <color name="md_theme_surfaceContainerHighest">#DEE4E1</color>
 
     <!-- Call type icons on the Call Logs tab. values-night has lighter shades for dark backgrounds. -->
     <color name="call_incoming">#2E7D32</color>
