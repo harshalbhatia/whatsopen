@@ -27,4 +27,9 @@
     <color name="md_theme_dark_outlineVariant">#3F4945</color>
     <color name="md_theme_dark_surfaceContainer">#1D201F</color>
     <color name="md_theme_dark_surfaceContainerHigh">#272B29</color>
+
+    <!-- Call type icons on the Call Logs tab -->
+    <color name="call_incoming">#81C784</color>
+    <color name="call_outgoing">#64B5F6</color>
+    <color name="call_missed">#E57373</color>
 </resources>

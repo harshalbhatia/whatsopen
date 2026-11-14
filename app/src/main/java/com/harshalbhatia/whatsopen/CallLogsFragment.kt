@@ -1,6 +1,9 @@
 package com.harshalbhatia.whatsopen
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -8,57 +11,45 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.Settings
+import android.telecom.TelecomManager
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.repeatOnLifecycle
 import com.harshalbhatia.whatsopen.databinding.FragmentCallLogsBinding
-import com.harshalbhatia.whatsopen.databinding.ItemCallLogBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class CallLogsFragment : Fragment() {
+/**
+ * Lists recent calls so the user can open a WhatsApp chat with a caller.
+ *
+ * The call log permission is only asked for when the user taps Allow access. Names come from
+ * the call log's own cache, so contacts aren't read. Nothing read is stored.
+ */
+class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
     private var _binding: FragmentCallLogsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: CallLogsAdapter
 
-    private var allCallLogs: List<CallLogItem> = emptyList()
-    private var filterIncoming = false
-    private var filterMissed = false
-    private var filterNonContactsOnly = false
+    private val viewModel: CallLogsViewModel by viewModels()
+    private var adapter: CallLogsAdapter? = null
 
-    private val requestPermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val callLogGranted = permissions[Manifest.permission.READ_CALL_LOG] == true
-        val contactsGranted = permissions[Manifest.permission.READ_CONTACTS] == true
-        if (callLogGranted) {
-            updateNonContactsChipState(contactsGranted)
-            loadCallLogs()
-        } else {
-            showPermissionDeniedState()
-        }
-    }
+    /** The open ⋮ menu of a row, if any. */
+    @VisibleForTesting
+    internal var rowMenu: PopupMenu? = null
+        private set
 
-    private val requestContactsPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            binding.chipNonContactsOnly.isEnabled = true
-            loadCallLogs()
-        }
+    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        refresh()
     }
 
     override fun onCreateView(
@@ -72,315 +63,152 @@ class CallLogsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        adapter = CallLogsAdapter { number ->
-            WhatsAppLauncher.openChat(requireContext(), number)
-        }
-
-        binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = this@CallLogsFragment.adapter
-        }
-
-        binding.chipIncoming.setOnCheckedChangeListener { _, isChecked ->
-            filterIncoming = isChecked
-            applyFilters()
-        }
-
-        binding.chipMissed.setOnCheckedChangeListener { _, isChecked ->
-            filterMissed = isChecked
-            applyFilters()
-        }
-
-        binding.chipNonContactsOnly.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked && !hasContactsPermission()) {
-                binding.chipNonContactsOnly.isChecked = false
-                requestContactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-                return@setOnCheckedChangeListener
-            }
-            filterNonContactsOnly = isChecked
-            applyFilters()
-        }
-
-        binding.grantPermissionButton.setOnClickListener {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                requestPermissionsLauncher.launch(
-                    arrayOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS)
-                )
-            } else {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", requireContext().packageName, null)
-                }
-                startActivity(intent)
-            }
-        }
-
-        checkPermissionsAndLoadLogs()
-    }
-
-    private fun checkPermissionsAndLoadLogs() {
-        val hasCallLog = ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.READ_CALL_LOG
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (hasCallLog) {
-            updateNonContactsChipState(hasContactsPermission())
-            loadCallLogs()
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-            showPermissionDeniedState()
-        } else {
-            requestPermissionsLauncher.launch(
-                arrayOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS)
-            )
-        }
-    }
-
-    private fun hasContactsPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.READ_CONTACTS
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun updateNonContactsChipState(hasPermission: Boolean) {
-        binding.chipNonContactsOnly.isEnabled = hasPermission
-        if (!hasPermission) {
-            binding.chipNonContactsOnly.isChecked = false
-            filterNonContactsOnly = false
-        }
-    }
-
-    private fun showPermissionDeniedState() {
-        binding.recyclerView.isVisible = false
-        binding.filterScroll.isVisible = false
-        binding.emptyState.isVisible = true
-        binding.emptyStateTitle.text = getString(R.string.empty_call_logs_permission_title)
-        binding.emptyStateDescription.text = getString(R.string.empty_call_logs_permission_description)
-        binding.grantPermissionButton.isVisible = true
-    }
-
-    private fun showEmptyState() {
-        binding.recyclerView.isVisible = false
-        binding.emptyState.isVisible = true
-        binding.emptyStateTitle.text = getString(R.string.empty_call_logs_title)
-        binding.emptyStateDescription.text = getString(R.string.empty_call_logs_description)
-        binding.grantPermissionButton.isVisible = false
-    }
-
-    private fun showFilteredEmptyState() {
-        binding.recyclerView.isVisible = false
-        binding.emptyState.isVisible = true
-        binding.emptyStateTitle.text = getString(R.string.empty_filtered_call_logs_title)
-        binding.emptyStateDescription.text = getString(R.string.empty_filtered_call_logs_description)
-        binding.grantPermissionButton.isVisible = false
-    }
-
-    private fun showCallLogs() {
-        binding.recyclerView.isVisible = true
-        binding.emptyState.isVisible = false
-    }
-
-    private fun applyFilters() {
-        val filtered = allCallLogs.filter { item ->
-            val matchesType = when {
-                filterIncoming && filterMissed ->
-                    item.callType == CallLog.Calls.INCOMING_TYPE || item.callType == CallLog.Calls.MISSED_TYPE
-                filterIncoming -> item.callType == CallLog.Calls.INCOMING_TYPE
-                filterMissed -> item.callType == CallLog.Calls.MISSED_TYPE
-                else -> true
-            }
-            val matchesContact = !filterNonContactsOnly || !item.isContact
-            matchesType && matchesContact
-        }
-
-        adapter.submitList(filtered)
-
-        if (filtered.isEmpty() && allCallLogs.isNotEmpty()) {
-            showFilteredEmptyState()
-        } else if (filtered.isEmpty()) {
-            showEmptyState()
-        } else {
-            showCallLogs()
-        }
-    }
-
-    private fun lookupContacts(context: Context, numbers: Set<String>): Map<String, String?> {
-        val results = mutableMapOf<String, String?>()
-        for (number in numbers) {
-            val lookupUri = Uri.withAppendedPath(
-                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(number)
-            )
-            try {
-                context.contentResolver.query(
-                    lookupUri,
-                    arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
-                    null,
-                    null,
-                    null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val name = cursor.getString(0)
-                        results[number] = if (name.isNullOrBlank()) null else name
-                    }
-                }
-            } catch (_: Exception) {
-                // SecurityException if permission revoked, or other errors
-            }
-        }
-        return results
-    }
-
-    private fun loadCallLogs() {
-        binding.filterScroll.isVisible = true
-
-        val appContext = requireContext().applicationContext
-
+        val adapter = CallLogsAdapter(this).also { adapter = it }
+        binding.recyclerView.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
-            val callLogs = withContext(Dispatchers.IO) {
-                val results = mutableListOf<Triple<String, Long, Int>>()
-                queryCallLog(appContext.contentResolver)?.use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val number = cursor.getString(0)
-                        val date = cursor.getLong(1)
-                        val type = cursor.getInt(2)
-                        results.add(Triple(number, date, type))
-                    }
-                }
-
-                val contactMap = if (hasContactsPermission()) {
-                    val uniqueNumbers = results.map { it.first }.toSet()
-                    lookupContacts(appContext, uniqueNumbers)
-                } else {
-                    emptyMap()
-                }
-
-                results.map { (number, date, type) ->
-                    CallLogItem(
-                        number = number,
-                        date = date,
-                        callType = type,
-                        isContact = contactMap.containsKey(number),
-                        contactName = contactMap[number]
-                    )
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { adapter.submit(CallLogsEntry.forState(it)) }
             }
-
-            allCallLogs = callLogs
-            applyFilters()
         }
     }
 
-    private fun queryCallLog(resolver: ContentResolver) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val args = Bundle().apply {
-                putStringArray(
-                    ContentResolver.QUERY_ARG_SORT_COLUMNS,
-                    arrayOf(CallLog.Calls.DATE)
-                )
-                putInt(
-                    ContentResolver.QUERY_ARG_SORT_DIRECTION,
-                    ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
-                )
-                putInt(ContentResolver.QUERY_ARG_LIMIT, CALL_LOG_LIMIT)
-            }
-            resolver.query(
-                CallLog.Calls.CONTENT_URI,
-                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.DATE, CallLog.Calls.TYPE),
-                args,
-                null
-            )
-        } else {
-            resolver.query(
-                CallLog.Calls.CONTENT_URI,
-                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.DATE, CallLog.Calls.TYPE),
-                null,
-                null,
-                "${CallLog.Calls.DATE} DESC LIMIT $CALL_LOG_LIMIT"
+    override fun onResume() {
+        super.onResume()
+        adapter?.refreshTimes()
+        // The permission may have been granted or revoked in Settings meanwhile.
+        refresh()
+    }
+
+    /** Works out what the tab can show, and reads the call log if it may. */
+    private fun refresh() {
+        val context = requireContext()
+        when {
+            !context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY) -> viewModel.showNoTelephony()
+            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) ==
+                PackageManager.PERMISSION_GRANTED -> viewModel.load()
+            // Android shows no rationale before the first request, nor after "don't ask again";
+            // only the second means a request would be refused without asking.
+            else -> viewModel.showNeedsPermission(
+                permanentlyDenied = permissionRequested() &&
+                    !shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)
             )
         }
+    }
+
+    override fun onFilterChanged(filter: CallLogFilter) = viewModel.setFilter(filter)
+
+    override fun onMessageAction(message: CallLogsMessage) {
+        when (message) {
+            CallLogsMessage.PERMISSION -> {
+                prefs().edit().putBoolean(KEY_PERMISSION_REQUESTED, true).apply()
+                requestPermission.launch(Manifest.permission.READ_CALL_LOG)
+            }
+            CallLogsMessage.PERMISSION_BLOCKED -> startOrComplain(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    .setData(Uri.fromParts("package", requireContext().packageName, null))
+            )
+            CallLogsMessage.ERROR -> refresh()
+            CallLogsMessage.NO_MATCHES -> viewModel.setFilter(CallLogFilter())
+            else -> Unit
+        }
+    }
+
+    override fun onCallClick(item: CallLogItem) {
+        WhatsAppLauncher.openChat(requireContext(), item.number, onError = { showSnackbar(it) })
+    }
+
+    override fun onMoreOptions(item: CallLogItem, anchor: View) {
+        rowMenu?.dismiss()
+        rowMenu = PopupMenu(requireContext(), anchor, Gravity.END).apply {
+            inflate(R.menu.call_log_row)
+            menu.findItem(R.id.action_save_contact).isVisible = !item.isContact
+            menu.findItem(R.id.action_view_contact).isVisible = item.isContact
+            setOnMenuItemClickListener { onMenuItem(item, it.itemId) }
+            setOnDismissListener { if (rowMenu === it) rowMenu = null }
+            show()
+        }
+    }
+
+    private fun onMenuItem(item: CallLogItem, id: Int): Boolean {
+        when (id) {
+            R.id.action_call -> dial(item.number)
+            R.id.action_copy_number -> copyNumber(item.number)
+            R.id.action_save_contact -> startOrComplain(
+                Intent(Intent.ACTION_INSERT_OR_EDIT)
+                    .setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE)
+                    .putExtra(ContactsContract.Intents.Insert.PHONE, item.number)
+            )
+            R.id.action_view_contact -> startOrComplain(viewContactIntent(item))
+            else -> return false
+        }
+        return true
+    }
+
+    /**
+     * Shows the contact the call log cached for [item]. Other apps can write to the call log,
+     * so its lookup URI is only opened if it points into the contacts provider; otherwise the
+     * contacts app looks the number up.
+     */
+    private fun viewContactIntent(item: CallLogItem): Intent {
+        val lookupUri = item.lookupUri?.let(Uri::parse)
+        return if (lookupUri?.scheme == ContentResolver.SCHEME_CONTENT && lookupUri.authority == ContactsContract.AUTHORITY) {
+            Intent(Intent.ACTION_VIEW, lookupUri)
+        } else {
+            Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, telUri(item.number))
+        }
+    }
+
+    /**
+     * Opens the phone app with [number] ready to call. This app handles tel: links too, so the
+     * default dialer is asked first; a plain ACTION_DIAL could offer this app back to the user.
+     */
+    private fun dial(number: String) {
+        val intent = Intent(Intent.ACTION_DIAL, telUri(number))
+        val dialer = requireContext().getSystemService(TelecomManager::class.java)?.defaultDialerPackage
+        if (dialer == null || dialer == requireContext().packageName || !start(Intent(intent).setPackage(dialer))) {
+            startOrComplain(intent)
+        }
+    }
+
+    private fun copyNumber(e164: String) {
+        val clipboard = requireContext().getSystemService(ClipboardManager::class.java) ?: return
+        clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.phone_number_clip_label), e164))
+        // Android 13+ confirms copies itself.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) showSnackbar(R.string.number_copied)
+    }
+
+    /** Starts [intent], or returns false if no app can handle it. */
+    private fun start(intent: Intent): Boolean = try {
+        startActivity(intent)
+        true
+    } catch (e: ActivityNotFoundException) {
+        false
+    } catch (e: SecurityException) {
+        // The only handler isn't exported, or needs a permission this app doesn't have.
+        false
+    }
+
+    private fun startOrComplain(intent: Intent) {
+        if (!start(intent)) showSnackbar(R.string.error_no_app_for_action)
+    }
+
+    /** Whether the user has been asked for the call log permission. No call data is kept. */
+    private fun permissionRequested() = prefs().getBoolean(KEY_PERMISSION_REQUESTED, false)
+
+    private fun prefs() = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     override fun onDestroyView() {
+        rowMenu?.dismiss()
+        rowMenu = null
+        adapter = null
         super.onDestroyView()
         _binding = null
     }
 
-    companion object {
-        private const val CALL_LOG_LIMIT = 200
-    }
-}
+    private companion object {
+        const val PREFS_NAME = "call_logs"
+        const val KEY_PERMISSION_REQUESTED = "permission_requested"
 
-data class CallLogItem(
-    val number: String,
-    val date: Long,
-    val callType: Int,
-    val isContact: Boolean,
-    val contactName: String?
-)
-
-class CallLogsAdapter(
-    private val onItemClick: (String) -> Unit
-) : ListAdapter<CallLogItem, CallLogsAdapter.ViewHolder>(CallLogDiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemCallLogBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    inner class ViewHolder(
-        private val binding: ItemCallLogBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(item: CallLogItem) {
-            val context = binding.root.context
-            val cleanedNumber = item.number.trim().replace(Regex("[^0-9+]"), "")
-            val (countryCode, phoneNumber) = PhoneNumbers.splitPhoneNumber(cleanedNumber)
-
-            binding.countryCode.text = countryCode
-            binding.countryCode.isVisible = countryCode.isNotEmpty()
-            binding.phoneNumber.text = phoneNumber
-            binding.callDate.text = DateFormatter.format(context, item.date)
-
-            if (item.contactName != null) {
-                binding.contactName.text = item.contactName
-                binding.contactName.isVisible = true
-            } else {
-                binding.contactName.isVisible = false
-            }
-
-            val (iconRes, descriptionRes) = when (item.callType) {
-                CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_incoming to R.string.call_type_incoming
-                CallLog.Calls.OUTGOING_TYPE -> R.drawable.ic_call_outgoing to R.string.call_type_outgoing
-                CallLog.Calls.MISSED_TYPE -> R.drawable.ic_call_missed to R.string.call_type_missed
-                else -> R.drawable.ic_call_incoming to R.string.call_type_incoming
-            }
-            binding.callTypeIcon.setImageResource(iconRes)
-
-            val typeDesc = context.getString(descriptionRes)
-            val identity = item.contactName ?: "$countryCode $phoneNumber".trim()
-            binding.root.contentDescription = "$typeDesc from $identity, ${binding.callDate.text}"
-
-            val open = View.OnClickListener { onItemClick(item.number) }
-            binding.callLogCard.setOnClickListener(open)
-            binding.openChatButton.setOnClickListener(open)
-        }
-    }
-}
-
-class CallLogDiffCallback : DiffUtil.ItemCallback<CallLogItem>() {
-    override fun areItemsTheSame(oldItem: CallLogItem, newItem: CallLogItem): Boolean {
-        return oldItem.number == newItem.number && oldItem.date == newItem.date
-    }
-
-    override fun areContentsTheSame(oldItem: CallLogItem, newItem: CallLogItem): Boolean {
-        return oldItem == newItem
+        fun telUri(number: String): Uri = Uri.fromParts("tel", number, null)
     }
 }

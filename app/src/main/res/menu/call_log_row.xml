@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A call log row's ⋮ menu. Save shows for numbers that aren't contacts, View for those that are. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_call"
+        android:title="@string/call_log_action_call" />
+    <item
+        android:id="@+id/action_copy_number"
+        android:title="@string/call_log_action_copy_number" />
+    <item
+        android:id="@+id/action_save_contact"
+        android:title="@string/call_log_action_save_contact" />
+    <item
+        android:id="@+id/action_view_contact"
+        android:title="@string/call_log_action_view_contact" />
+</menu>

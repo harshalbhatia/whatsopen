@@ -57,27 +57,89 @@
 
     <!-- Call Logs Fragment -->
     <string name="call_logs_subtitle">Open WhatsApp chat with your recent calls</string>
-    <string name="open_chat">Open Chat</string>
     <string name="chat">Chat</string>
+    <!-- Below the filter chips; read out by screen readers when it changes. %d is how many calls the list shows. -->
+    <plurals name="call_logs_count">
+        <item quantity="one">%d call</item>
+        <item quantity="other">%d calls</item>
+    </plurals>
+    <!-- Read by screen readers for the loading indicator. -->
+    <string name="call_logs_loading">Loading recent calls</string>
 
     <!-- Call Log Filters -->
     <string name="filter_incoming">Incoming</string>
     <string name="filter_missed">Missed</string>
     <string name="filter_non_contacts">Non-contacts</string>
 
-    <!-- Call type accessibility descriptions -->
-    <string name="call_type_incoming">Incoming call</string>
-    <string name="call_type_outgoing">Outgoing call</string>
-    <string name="call_type_missed">Missed call</string>
+    <!-- Call log rows. The second line of a row is the call type, then the time, e.g. "Missed (3) · 2 hr. ago". -->
+    <string name="call_log_type_incoming">Incoming</string>
+    <string name="call_log_type_outgoing">Outgoing</string>
+    <!-- Also used for rejected and blocked calls. -->
+    <string name="call_log_type_missed">Missed</string>
+    <!-- For a call type the app doesn't recognise. -->
+    <string name="call_log_type_other">Call</string>
+    <!-- %1$s is a call type above, %2$d how many calls in a row the line stands for (always 2 or more). -->
+    <string name="call_log_type_count">%1$s (%2$d)</string>
+    <!-- %1$s is the call type (with its count), %2$s when the call was, e.g. "2 hr. ago". -->
+    <string name="call_log_details">%1$s · %2$s</string>
+
+    <!-- Read by screen readers for a call log row. %1$s is the contact's name or the phone number,
+         %2$s when the call was, e.g. "2 hr. ago". -->
+    <string name="call_log_description_incoming">Incoming call from %1$s, %2$s</string>
+    <string name="call_log_description_outgoing">Outgoing call to %1$s, %2$s</string>
+    <!-- Also used for rejected and blocked calls. -->
+    <string name="call_log_description_missed">Missed call from %1$s, %2$s</string>
+    <!-- For a call type the app doesn't recognise, so it doesn't say which way the call went. -->
+    <string name="call_log_description_other">Call with %1$s, %2$s</string>
+    <!-- Added when a row stands for several calls in a row. %1$s is one of the sentences above,
+         %2$d how many calls (always 2 or more). -->
+    <plurals name="call_log_description_count">
+        <item quantity="one">%1$s, %2$d call</item>
+        <item quantity="other">%1$s, %2$d calls</item>
+    </plurals>
+    <!-- Screen readers announce this for tapping a call log row, as in "Double-tap to open WhatsApp chat". -->
+    <string name="call_log_open_chat_action">Open WhatsApp chat</string>
+    <!-- Read by screen readers for the ⋮ button on a call log row. %1$s is the contact's name or the phone number. -->
+    <string name="call_log_more_options">More options for %1$s</string>
+
+    <!-- Menu of a call log row's ⋮ button -->
+    <!-- Opens the phone app with the number ready to dial. -->
+    <string name="call_log_action_call">Call</string>
+    <string name="call_log_action_copy_number">Copy number</string>
+    <!-- Opens the contacts app to add the number to a new or existing contact. -->
+    <string name="call_log_action_save_contact">Save to contacts</string>
+    <string name="call_log_action_view_contact">View contact</string>
+    <!-- Shown after Copy number, on Android versions that don't confirm copies themselves. -->
+    <string name="number_copied">Number copied</string>
+    <!-- Label of the copied number on the clipboard; some keyboards and clipboard managers show it. -->
+    <string name="phone_number_clip_label">Phone number</string>
+    <!-- Shown when no app on the phone can call, show or save a contact. -->
+    <string name="error_no_app_for_action">No app can do this</string>
 
     <!-- Empty States -->
     <string name="empty_call_logs_title">No recent calls</string>
     <string name="empty_call_logs_description">Your recent calls will appear here</string>
-    <string name="empty_call_logs_permission_title">Permission required</string>
-    <string name="empty_call_logs_permission_description">Allow access to call logs to see your recent calls</string>
     <string name="empty_filtered_call_logs_title">No matching calls</string>
     <string name="empty_filtered_call_logs_description">Try changing your filters to see more results</string>
-    <string name="grant_permission">Grant Permission</string>
+    <!-- Button that turns every filter chip off. -->
+    <string name="clear_filters">Clear filters</string>
+    <!-- Before the app has asked for the call log permission. -->
+    <string name="call_logs_permission_title">See your recent calls here</string>
+    <string name="call_logs_permission_rationale">To show recent calls so you can message a caller on WhatsApp. Nothing leaves your phone.</string>
+    <!-- Button that asks Android for the call log permission. -->
+    <string name="call_logs_allow_access">Allow access</string>
+    <!-- When the call log permission was denied and Android won't ask again. "Call logs" is the
+         permission's name in Android's settings. -->
+    <string name="call_logs_permission_blocked_title">Call log access is off</string>
+    <string name="call_logs_permission_blocked_text">To show recent calls so you can message a caller on WhatsApp, allow Call logs in this app\'s permissions. Nothing leaves your phone.</string>
+    <!-- Button that opens this app's page in Android's settings. -->
+    <string name="open_settings">Open settings</string>
+    <!-- On tablets and other devices without a phone line. -->
+    <string name="call_logs_no_telephony_title">This device doesn\'t make phone calls</string>
+    <string name="call_logs_no_telephony_text">To start a chat, type or paste a number in the other tabs.</string>
+    <string name="call_logs_error_title">Couldn\'t load recent calls</string>
+    <string name="call_logs_error_text">Something went wrong reading the call log.</string>
+    <string name="try_again">Try again</string>
 
     <!-- Validation Errors -->
     <string name="error_country_code_required">Enter a country code</string>

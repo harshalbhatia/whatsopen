@@ -1,106 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- A call log row: one focus stop that opens the WhatsApp chat, plus the ⋮ button. The row's
+     content description (set in code) is the sentence screen readers read, so its parts aren't
+     read separately. -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/call_log_card"
+    android:id="@+id/call_log_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="0dp"
-    android:layout_marginVertical="@dimen/card_margin_vertical"
-    android:clickable="true"
-    android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/corner_radius_card"
-    app:cardElevation="0dp"
-    app:strokeColor="?android:colorControlHighlight"
-    app:strokeWidth="1dp">
+    android:focusable="true"
+    android:minHeight="@dimen/list_item_min_height"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/list_item_padding_end">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="@dimen/card_padding">
+        android:layout_marginEnd="@dimen/list_item_padding_end"
+        android:importantForAccessibility="no"
+        app:dividerColor="?attr/colorOutlineVariant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/call_type_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:importantForAccessibility="no"
-            app:layout_constraintBottom_toBottomOf="@id/primary_line"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/primary_line"
-            tools:src="@drawable/ic_call_incoming" />
+    <TextView
+        android:id="@+id/primary_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/list_item_padding_vertical"
+        android:ellipsize="end"
+        android:importantForAccessibility="no"
+        android:maxLines="2"
+        android:textAlignment="viewStart"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toTopOf="@id/secondary_text"
+        app:layout_constraintEnd_toStartOf="@id/more_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="+44 7911 123456" />
 
-        <TextView
-            android:id="@+id/contact_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:textColorSecondary"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/open_chat_button"
-            app:layout_constraintStart_toEndOf="@id/call_type_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mom"
-            tools:visibility="visible" />
+    <ImageView
+        android:id="@+id/call_type_icon"
+        android:layout_width="@dimen/call_type_icon_size"
+        android:layout_height="@dimen/call_type_icon_size"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/secondary_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/secondary_text"
+        tools:src="@drawable/ic_call_missed" />
 
-        <LinearLayout
-            android:id="@+id/primary_line"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toStartOf="@id/open_chat_button"
-            app:layout_constraintStart_toEndOf="@id/call_type_icon"
-            app:layout_constraintTop_toBottomOf="@id/contact_name">
+    <TextView
+        android:id="@+id/secondary_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/call_type_icon_spacing"
+        android:layout_marginBottom="@dimen/list_item_padding_vertical"
+        android:importantForAccessibility="no"
+        android:textAlignment="viewStart"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/more_button"
+        app:layout_constraintStart_toEndOf="@id/call_type_icon"
+        app:layout_constraintTop_toBottomOf="@id/primary_text"
+        tools:text="Missed (3) · 2 hr. ago" />
 
-            <TextView
-                android:id="@+id/country_code"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="?android:textColorSecondary"
-                tools:text="+91" />
+    <!-- Its content description names the row's caller, so it is set in code. -->
+    <ImageButton
+        android:id="@+id/more_button"
+        android:layout_width="@dimen/icon_button_size"
+        android:layout_height="@dimen/icon_button_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_more_vert"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/phone_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                tools:text="4440510000" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/call_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:textColorSecondary"
-            app:layout_constraintEnd_toStartOf="@id/open_chat_button"
-            app:layout_constraintStart_toStartOf="@id/primary_line"
-            app:layout_constraintTop_toBottomOf="@id/primary_line"
-            tools:text="2h ago" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/open_chat_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@string/open_chat"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:icon="@drawable/ic_whatsapp"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
