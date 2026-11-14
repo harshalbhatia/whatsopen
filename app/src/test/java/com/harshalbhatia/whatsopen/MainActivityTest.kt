@@ -1,5 +1,6 @@
 package com.harshalbhatia.whatsopen
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.BadParcelableException
@@ -24,6 +25,8 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import org.robolectric.shadows.ShadowLooper
+import org.xmlpull.v1.XmlPullParser
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
@@ -100,6 +103,27 @@ class MainActivityTest {
         assertEquals("open_tab", MainActivity.EXTRA_OPEN_TAB)
         assertEquals("clipboard", MainActivity.TAB_CLIPBOARD)
         assertEquals("call_logs", MainActivity.TAB_CALL_LOGS)
+    }
+
+    @Test
+    fun `shortcuts open this app, and the debug copy matches the main one`() {
+        val app = ApplicationProvider.getApplicationContext<Context>()
+        val targets = mutableListOf<String?>()
+        app.resources.getXml(R.xml.shortcuts).use { xml ->
+            while (xml.next() != XmlPullParser.END_DOCUMENT) {
+                if (xml.eventType == XmlPullParser.START_TAG && xml.name == "intent") {
+                    targets += xml.getAttributeValue(ANDROID_NS, "targetPackage")
+                }
+            }
+        }
+        assertEquals(listOf(app.packageName, app.packageName), targets)
+
+        // Unit tests run in the module directory. Only the target package may differ.
+        fun shortcutsIn(sourceSet: String) = File("src/$sourceSet/res/xml/shortcuts.xml").readText()
+            .replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
+            .replace(Regex("android:targetPackage=\"[^\"]*\""), "")
+            .lines().map(String::trim).filter(String::isNotEmpty)
+        assertEquals(shortcutsIn("main"), shortcutsIn("debug"))
     }
 
     @Test
@@ -245,5 +269,9 @@ class MainActivityTest {
         assertTrue("the tab scrolled", visibleTop > 0)
         assertTrue("field in view", content.boundsOf(phoneInput).top >= visibleTop)
         assertTrue("button in view", content.boundsOf(button).bottom <= visibleBottom)
+    }
+
+    private companion object {
+        const val ANDROID_NS = "http://schemas.android.com/apk/res/android"
     }
 }

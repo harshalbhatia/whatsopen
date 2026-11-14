@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.harshalbhatia.whatsopen", appContext.packageName)
+        assertEquals("com.harshalbhatia.whatsopen.debug", appContext.packageName)
     }
 }
