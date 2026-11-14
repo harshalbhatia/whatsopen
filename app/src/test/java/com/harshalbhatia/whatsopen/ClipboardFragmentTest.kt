@@ -12,6 +12,7 @@ import android.os.Looper
 import android.telephony.TelephonyManager
 import android.text.InputFilter
 import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -163,7 +164,7 @@ class ClipboardFragmentTest {
         setClipboard("Call +1 415-555-2671 today")
         launch().withBinding { binding, fragment ->
             refocus(fragment.requireActivity())
-            binding.clipboardPasteButton.performClick()
+            binding.clipboardSuggestion.performClick()
             assertEquals(1, reads)
             assertEquals("Call +1 415-555-2671 today", binding.numbersInput.text.toString())
             assertFalse(binding.clipboardSuggestion.isShown)
@@ -177,7 +178,7 @@ class ClipboardFragmentTest {
         setClipboard("+14155552671", timestamp = 1_000L)
         launch().withBinding { binding, fragment ->
             refocus(fragment.requireActivity())
-            binding.clipboardPasteButton.performClick()
+            binding.clipboardSuggestion.performClick()
             refocus(fragment.requireActivity())
             assertFalse(binding.clipboardSuggestion.isShown)
 
@@ -344,11 +345,20 @@ class ClipboardFragmentTest {
     // --- Accessibility ---
 
     @Test
-    fun `the tab names itself to accessibility services, and its titles are headings`() {
+    fun `the tab names itself to accessibility services, and its title is a heading`() {
         launch().withBinding { binding, _ ->
             assertEquals(app.getString(R.string.nav_clipboard), ViewCompat.getAccessibilityPaneTitle(binding.root))
             assertTrue(ViewCompat.isAccessibilityHeading(binding.title))
-            assertTrue(ViewCompat.isAccessibilityHeading(binding.clipboardSuggestionTitle))
+        }
+    }
+
+    @Test
+    fun `the whole Paste card is one button, named Paste for screen readers`() {
+        launch().withBinding { binding, _ ->
+            val card = binding.clipboardSuggestion
+            assertTrue(card.isClickable && card.isFocusable)
+            val click = card.createAccessibilityNodeInfo().actionList.single { it.id == AccessibilityNodeInfo.ACTION_CLICK }
+            assertEquals(app.getString(R.string.paste), click.label)
         }
     }
 }

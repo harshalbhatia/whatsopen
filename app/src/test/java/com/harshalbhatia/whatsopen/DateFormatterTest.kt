@@ -82,6 +82,21 @@ class DateFormatterTest {
 
     @Test
     @Config(qualifiers = "en-rUS")
+    fun `under a minute is Now, not 0 min ago`() {
+        assertEquals("Now, 10:13 PM", format(now - TimeUnit.SECONDS.toMillis(20)))
+        // A clock a few seconds out doesn't make it "In 0 min.".
+        assertEquals("Now, 10:13 PM", format(now + TimeUnit.SECONDS.toMillis(5)))
+        assertEquals("1 min. ago, 10:12 PM", format(now - TimeUnit.MINUTES.toMillis(1)))
+    }
+
+    @Test
+    @Config(qualifiers = "de-rDE")
+    fun `Now is translated`() {
+        assertEquals("Jetzt, 22:13", format(now - TimeUnit.SECONDS.toMillis(20)))
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS")
     fun `24-hour setting applies to relative and absolute times in a 12-hour locale`() {
         use24Hour(true)
         assertEquals("2 hr. ago, 20:13", format(now - TimeUnit.HOURS.toMillis(2)))
