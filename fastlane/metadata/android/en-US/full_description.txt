@@ -2,15 +2,16 @@ WhatsOpen lets you start a WhatsApp conversation with any phone number — even 
 
 Features:
 
-* Enter a phone number with country code and open WhatsApp directly
-* Auto-detect phone numbers from your clipboard
-* Browse recent call log entries and open WhatsApp for any of them
-* Filter call log by call type and WhatsApp contact status
-* Material 3 design with light and dark themes
+* Type a number and open the chat; your country code is filled in
+* Paste text with phone numbers in it and WhatsOpen finds each one
+* Open a chat with a recent caller, with filters for incoming, missed and non-contact calls
+* Share text, tap a phone link, or select a number in any app to open its chat
+* Paste & Open from a home screen shortcut or a Quick Settings tile
+* Works with WhatsApp and WhatsApp Business
+* Material You colours, dark theme and a themed icon
 
 WhatsOpen requires no network access, contains no analytics, and does not track you. All processing happens on-device.
 
 Permissions:
 
-* Read call log — to show recent calls
-* Read contacts — to display contact names alongside numbers
+* Read call log (optional) — to show recent calls. Names come from the call log itself; WhatsOpen doesn't read your contacts.
