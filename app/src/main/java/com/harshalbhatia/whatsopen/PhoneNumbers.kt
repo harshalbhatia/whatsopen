@@ -48,6 +48,13 @@ object PhoneNumbers {
     /** Digits and visual separators, not starting with 0: may be a number written without its "+". */
     private val BARE_INTERNATIONAL_SHAPE = Regex("""\(?[1-9][\d ().\-/]*""")
 
+    /**
+     * A whole +1 number: the North American plan has exactly 10 digits after the code, and
+     * area codes never start with 0 or 1. Without this, "+1 1 416 555 0123" (the trunk "1"
+     * repeated) would pass as a 12-digit +1 number.
+     */
+    private val NANP_NUMBER = Regex("""1[2-9]\d{9}""")
+
     /** Only "+", digits and visual separators: the shape a written "+" number has. */
     private val PLUS_NUMBER_SHAPE = Regex("""\(?\+[\d ().\-/]*""")
 
@@ -64,8 +71,8 @@ object PhoneNumbers {
      *   formatting characters (bidi controls, zero-width spaces) are ignored.
      * - The platform's validation can be stricter than reality (old metadata, fictional
      *   ranges like 555), so a number written with "+" is still accepted when it has 8–15
-     *   digits and starts with an assigned country code. A "(0)" after the country code is
-     *   dropped in that case.
+     *   digits and starts with an assigned country code (for +1, exactly 10 more digits).
+     *   A "(0)" after the country code is dropped in that case.
      */
     fun normalize(raw: CharSequence, defaultRegion: String?): String? {
         val text = sanitize(raw).trim()
@@ -175,7 +182,8 @@ object PhoneNumbers {
         if (!PLUS_NUMBER_SHAPE.matches(text)) return null
         val digits = text.replace("(0)", "").filter(::isAsciiDigit)
         if (digits.length !in MIN_LENIENT_DIGITS..MAX_E164_DIGITS) return null
-        if (CountryData.callingCodePrefix(digits) == null) return null
+        val code = CountryData.callingCodePrefix(digits) ?: return null
+        if (code == NANP_CALLING_CODE && !NANP_NUMBER.matches(digits)) return null
         return "+$digits"
     }
 
@@ -243,6 +251,7 @@ object PhoneNumbers {
 
     private fun isAsciiDigit(c: Char): Boolean = c in '0'..'9'
 
+    private const val NANP_CALLING_CODE = "1"
     private const val FULLWIDTH_PLUS = 0xFF0B
     private const val SMALL_PLUS = 0xFE62
     private const val MINUS_SIGN = 0x2212

@@ -7,110 +7,162 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/screen_padding">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content"
+            style="@style/Widget.WhatsOpen.ContentColumn"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/first_fragment_label"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:padding="@dimen/screen_padding"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_title_subtitle"
-            android:text="@string/subtitle"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="?android:textColorSecondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/first_fragment_label"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/country_code_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_subtitle_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/subtitle">
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_title_subtitle"
+                android:text="@string/subtitle"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?android:textColorSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+            <LinearLayout
+                android:id="@+id/country_code_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_subtitle_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/subtitle">
+
+                <!-- Always left to right, so the "+" prefix stays in front of the digits in RTL languages. -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/country_code_input_layout"
+                    android:layout_width="@dimen/country_code_field_width"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/country_code_hint"
+                    android:layoutDirection="ltr"
+                    app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
+                    app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
+                    app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
+                    app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
+                    app:prefixText="+">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/country_code_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="phone"
+                        android:maxLength="3"
+                        android:nextFocusDown="@id/phone_input"
+                        android:textAlignment="viewStart"
+                        android:textDirection="ltr" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Text and content description are set in code. -->
+                <TextView
+                    android:id="@+id/country_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:accessibilityLiveRegion="polite"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:maxLines="2"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="?android:textColorSecondary" />
+
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/country_code_input_layout"
-                android:layout_width="120dp"
+                android:id="@+id/phone_input_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/country_code_hint"
+                android:layout_marginTop="@dimen/spacing_between_inputs"
+                android:hint="@string/phone_number_hint"
                 app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
                 app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
                 app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
                 app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
-                app:prefixText="+">
+                app:helperText="@string/phone_helper_text"
+                app:layout_constraintTop_toBottomOf="@id/country_code_container">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/country_code_input"
+                    android:id="@+id/phone_input"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/input_height"
-                    android:imeOptions="actionNext"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionGo"
                     android:inputType="phone"
-                    android:maxLength="3"
-                    android:nextFocusDown="@id/phone_input"
-                    android:textAlignment="viewStart" />
+                    android:textAlignment="viewStart"
+                    android:textDirection="ltr" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/country_info"
-                android:layout_width="0dp"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_message_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="start|center_vertical"
-                android:maxLines="1"
-                android:contentDescription="@string/country_info_description"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="?android:textColorSecondary" />
+                android:layout_marginTop="@dimen/spacing_title_subtitle"
+                android:text="@string/add_message"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/phone_input_layout" />
 
-        </LinearLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/phone_input_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_between_inputs"
-            android:hint="@string/phone_number_hint"
-            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
-            app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
-            app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
-            app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
-            app:helperText="@string/phone_helper_text"
-            app:layout_constraintTop_toBottomOf="@id/country_code_container">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/phone_input"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/message_input_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/input_height"
-                android:imeOptions="actionGo"
-                android:inputType="phone" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_title_subtitle"
+                android:hint="@string/message_hint"
+                android:visibility="gone"
+                app:boxCornerRadiusBottomEnd="@dimen/corner_radius_input"
+                app:boxCornerRadiusBottomStart="@dimen/corner_radius_input"
+                app:boxCornerRadiusTopEnd="@dimen/corner_radius_input"
+                app:boxCornerRadiusTopStart="@dimen/corner_radius_input"
+                app:helperText="@string/message_helper_text"
+                app:layout_constraintTop_toBottomOf="@id/add_message_button">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/message_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="6"
+                    android:minLines="2" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/open_whatsapp_button"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/spacing_input_button"
-            android:contentDescription="@string/open_in_whatsapp"
-            android:text="@string/open_in_whatsapp"
-            android:textAllCaps="false"
-            app:cornerRadius="@dimen/corner_radius_input"
-            app:icon="@drawable/ic_whatsapp"
-            app:layout_constraintTop_toBottomOf="@id/phone_input_layout" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/open_whatsapp_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_between_inputs"
+                android:minHeight="@dimen/button_min_height"
+                android:text="@string/open_in_whatsapp"
+                android:textAllCaps="false"
+                app:cornerRadius="@dimen/corner_radius_input"
+                app:icon="@drawable/ic_whatsapp"
+                app:layout_constraintTop_toBottomOf="@id/message_input_layout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

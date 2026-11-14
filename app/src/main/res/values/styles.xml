@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A tab's content: full width on phones, at most @dimen/content_max_width and centred on
+         wider windows. For a direct child of a ConstraintLayout, with layout_width 0dp and
+         constrained to the parent's start and end (in the layout, where lint can see them). -->
+    <style name="Widget.WhatsOpen.ContentColumn" parent="">
+        <item name="layout_constraintWidth_max">@dimen/content_max_width</item>
+    </style>
+</resources>

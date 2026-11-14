@@ -4,10 +4,29 @@
     <string name="first_fragment_label">By Number</string>
     <string name="enter_phone_number">Enter Phone Number</string>
     <string name="open_in_whatsapp">Start Chat in WhatsApp</string>
-    <string name="country_code_hint">Country</string>
+    <!-- Label of the field for the international calling code, e.g. 44 for the United Kingdom.
+         The field is narrow, so keep it short. -->
+    <string name="country_code_hint">Country code</string>
     <string name="phone_number_hint">Number</string>
     <string name="subtitle">Open any WhatsApp chat without saving the contact</string>
     <string name="phone_helper_text">Enter number without country code</string>
+    <!-- Next to the country code field: %1$s is the country's flag emoji, %2$s its name. -->
+    <string name="country_label" translatable="false">%1$s  %2$s</string>
+    <!-- Shown next to the country code field when no country uses the code typed in it. -->
+    <string name="unknown_country_code">Unknown code</string>
+    <!-- Button that reveals an optional message field on the By Number tab. -->
+    <string name="add_message">Add a message</string>
+    <!-- Label of the optional message field. -->
+    <string name="message_hint">Message</string>
+    <!-- Below the message field: WhatsApp opens with the message typed in, but the user still has to send it. -->
+    <string name="message_helper_text">Typed in for you in WhatsApp, ready to send</string>
+    <!-- Screen readers announce this for long-pressing the Start Chat button, as in
+         "Double-tap and hold to reset WhatsApp app choice". -->
+    <string name="reset_app_choice_action">Reset WhatsApp app choice</string>
+    <!-- After long-pressing Start Chat: WhatsApp or WhatsApp Business will be asked for again next time. -->
+    <string name="app_choice_reset">WhatsApp app choice reset</string>
+    <!-- After long-pressing Start Chat when no app (WhatsApp or WhatsApp Business) had been remembered. -->
+    <string name="app_choice_nothing_to_reset">No app choice to reset</string>
 
     <!-- Bottom Navigation -->
     <string name="nav_by_number">By Number</string>
@@ -19,6 +38,21 @@
     <string name="clipboard_subtitle">Paste a phone number to start a WhatsApp chat</string>
     <string name="clipboard_hint">Paste numbers here</string>
     <string name="clipboard_helper_text">Example: +1 555-123-4567</string>
+    <!-- Card offering to paste the clipboard into the Clipboard tab's text box. -->
+    <string name="clipboard_suggestion_title">Paste from clipboard</string>
+    <!-- Card text when the clipboard holds text. The app doesn't look at the text until Paste is tapped. -->
+    <string name="clipboard_suggestion_text">Your clipboard has text. Paste it to find the phone numbers in it.</string>
+    <!-- Card text when Android has detected a phone number on the clipboard. -->
+    <string name="clipboard_suggestion_text_phone">Your clipboard seems to have a phone number.</string>
+    <!-- Button and icon that paste the clipboard's text into the text box. -->
+    <string name="paste">Paste</string>
+    <!-- Shown under the Clipboard tab's text box when the text in it has no phone number. -->
+    <string name="no_phone_number_found">No phone number found</string>
+    <!-- Above the phone numbers found in the Clipboard tab's text box. %d is how many. -->
+    <plurals name="numbers_found">
+        <item quantity="one">%d number found</item>
+        <item quantity="other">%d numbers found</item>
+    </plurals>
     <string name="process_numbers">Open in WhatsApp</string>
 
     <!-- Call Logs Fragment -->
@@ -48,7 +82,6 @@
     <!-- Validation Errors -->
     <string name="error_country_code_required">Enter a country code</string>
     <string name="error_phone_required">Enter a phone number</string>
-    <string name="error_no_valid_numbers">No valid phone numbers found</string>
     <string name="error_invalid_phone_number">Not a valid phone number</string>
 
     <!-- Opening WhatsApp -->
@@ -59,7 +92,7 @@
     <string name="whatsapp_app_name" translatable="false">WhatsApp</string>
     <string name="whatsapp_business_app_name" translatable="false">WhatsApp Business</string>
     <string name="error_link_without_number">That link doesn\'t contain a valid phone number</string>
-    <!-- Shown when Paste & Open (shortcut or Quick Settings tile) finds nothing on the clipboard. -->
+    <!-- Shown when Paste & Open (shortcut or Quick Settings tile) or the Clipboard tab's Paste finds nothing on the clipboard. -->
     <string name="error_clipboard_empty">Clipboard is empty</string>
 
     <!-- Shown in the menu that appears when text is selected in another app (next to Copy and Share).
@@ -70,7 +103,9 @@
     <string name="tile_paste_and_chat">Paste &amp; chat</string>
 
     <!-- Accessibility -->
-    <string name="country_info_description">Country information for entered code</string>
+    <!-- Read by screen readers for the country shown next to the country code field.
+         %1$s is the country's name, e.g. "India". -->
+    <string name="country_label_description">Country: %1$s</string>
 
     <!-- App shortcuts -->
     <string name="shortcut_paste_short">Paste &amp; Open</string>
