@@ -1,5 +1,6 @@
 package com.harshalbhatia.whatsopen
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.Editable
 import android.text.Selection
@@ -43,6 +44,15 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ViewCompat.setAccessibilityPaneTitle(view, getString(R.string.nav_by_number))
+        ViewCompat.setAccessibilityHeading(binding.title, true)
+
+        // The keyboard shortens the tab (MainActivity pads it). The scroll view then scrolls the
+        // focused field into view; this brings Start Chat along with it.
+        binding.root.addOnLayoutChangeListener { scrollView, _, top, _, bottom, _, oldTop, _, oldBottom ->
+            if (bottom - top < oldBottom - oldTop) scrollView.post { revealFocusedFieldAndButton() }
+        }
 
         userRegion = DefaultRegion.get(requireContext())
 
@@ -199,6 +209,23 @@ class FirstFragment : Fragment() {
                 label.contentDescription = null
             }
         }
+    }
+
+    /**
+     * Scrolls so the focused field and the Start Chat button below it both show, or if they
+     * don't fit, the top of the field.
+     */
+    private fun revealFocusedFieldAndButton() {
+        val binding = _binding ?: return
+        val scrollView = binding.root
+        val focused = scrollView.findFocus()?.takeIf { it !== scrollView } ?: return
+        val content = scrollView.getChildAt(0) as ViewGroup
+        val area = Rect().also { focused.getDrawingRect(it) }
+        content.offsetDescendantRectToMyCoords(focused, area)
+        val button = Rect().also { binding.openWhatsappButton.getDrawingRect(it) }
+        content.offsetDescendantRectToMyCoords(binding.openWhatsappButton, button)
+        area.union(button)
+        scrollView.requestChildRectangleOnScreen(content, area, false)
     }
 
     private fun showMessageField(shown: Boolean) {

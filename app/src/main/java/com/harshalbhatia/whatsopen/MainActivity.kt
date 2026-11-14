@@ -5,6 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isGone
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.harshalbhatia.whatsopen.databinding.ActivityMainBinding
@@ -18,6 +22,9 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets -> applyInsets(insets) }
+        // In place of the bottom navigation's own handling, which would pad it for the keyboard too.
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { _, insets -> padBottomNavigation(insets) }
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
@@ -32,6 +39,38 @@ class MainActivity : AppCompatActivity() {
             handleIncomingIntent(intent)
         }
     }
+
+    /**
+     * Keeps the tabs clear of the status bar and display cutout. While the keyboard is up the
+     * bottom navigation hides and the tabs end at the keyboard, so the scrolling tabs can bring
+     * what's being typed into view.
+     */
+    private fun applyInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
+        val bars = insets.barsAndCutout()
+        val keyboardShown = insets.isVisible(WindowInsetsCompat.Type.ime())
+        // A floating keyboard has no height; the navigation bar still needs room then.
+        val keyboardTop = maxOf(insets.getInsets(WindowInsetsCompat.Type.ime()).bottom, bars.bottom)
+        binding.navHostFragmentContentMain.updatePadding(
+            left = bars.left,
+            top = bars.top,
+            right = bars.right,
+            bottom = if (keyboardShown) keyboardTop else 0,
+        )
+        binding.bottomNavigation.isGone = keyboardShown
+        // Not consumed: up to API 29 that also keeps them from views added to the window after
+        // this one, such as snackbars, which need them to clear the keyboard.
+        return insets
+    }
+
+    /** Keeps the bottom navigation's items above the navigation bar, which its background extends behind. */
+    private fun padBottomNavigation(insets: WindowInsetsCompat): WindowInsetsCompat {
+        val bars = insets.barsAndCutout()
+        binding.bottomNavigation.updatePadding(left = bars.left, right = bars.right, bottom = bars.bottom)
+        return insets
+    }
+
+    private fun WindowInsetsCompat.barsAndCutout() =
+        getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

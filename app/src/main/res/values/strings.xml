@@ -1,15 +1,21 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WhatsOpen</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">By Number</string>
-    <string name="enter_phone_number">Enter Phone Number</string>
+
+    <!-- By Number tab -->
+    <!-- Main button on the By Number and Clipboard tabs: opens a WhatsApp chat with the number. -->
     <string name="open_in_whatsapp">Start Chat in WhatsApp</string>
     <!-- Label of the field for the international calling code, e.g. 44 for the United Kingdom.
          The field is narrow, so keep it short. -->
     <string name="country_code_hint">Country code</string>
+    <!-- Shown before the digits in the country code field, as in "+44". Not a word. -->
+    <string name="country_code_prefix" translatable="false">+</string>
+    <!-- Label of the phone number field, next to the country code field. -->
     <string name="phone_number_hint">Number</string>
     <string name="subtitle">Open any WhatsApp chat without saving the contact</string>
-    <string name="phone_helper_text">Enter number without country code</string>
+    <!-- Below the phone number field. The field takes a number as dialled within the country chosen
+         in the country code field, or a whole international number starting with "+" (or "00"),
+         which then replaces the country code. -->
+    <string name="phone_helper_text">Local number, or a full number starting with +</string>
     <!-- Next to the country code field: %1$s is the country's flag emoji, %2$s its name. -->
     <string name="country_label" translatable="false">%1$s  %2$s</string>
     <!-- Shown next to the country code field when no country uses the code typed in it. -->
@@ -28,16 +34,25 @@
     <!-- After long-pressing Start Chat when no app (WhatsApp or WhatsApp Business) had been remembered. -->
     <string name="app_choice_nothing_to_reset">No app choice to reset</string>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom navigation. Tab labels: keep them short, three sit side by side on a phone.
+         Each is also the tab's name for screen readers, and By Number and Call Logs are their tab's
+         title too. -->
+    <!-- Tab for typing a phone number. -->
     <string name="nav_by_number">By Number</string>
+    <!-- Tab listing the phone's recent calls. -->
     <string name="nav_call_logs">Call Logs</string>
+    <!-- Tab for pasting text and finding the phone numbers in it. -->
     <string name="nav_clipboard">Clipboard</string>
 
-    <!-- Clipboard Fragment -->
+    <!-- Clipboard tab -->
+    <!-- Title of the Clipboard tab. -->
     <string name="clipboard_title">From Clipboard</string>
     <string name="clipboard_subtitle">Paste a phone number to start a WhatsApp chat</string>
+    <!-- Label of the Clipboard tab's text box. -->
     <string name="clipboard_hint">Paste numbers here</string>
-    <string name="clipboard_helper_text">Example: +1 555-123-4567</string>
+    <!-- Below the Clipboard tab's text box: the kind of text to paste. A number written the way
+         people write numbers locally is fine; the hyphens are part of the number, not dashes. -->
+    <string name="clipboard_helper_text" tools:ignore="TypographyDashes">Example: +1 555-123-4567</string>
     <!-- Card offering to paste the clipboard into the Clipboard tab's text box. -->
     <string name="clipboard_suggestion_title">Paste from clipboard</string>
     <!-- Card text when the clipboard holds text. The app doesn't look at the text until Paste is tapped. -->
@@ -53,11 +68,9 @@
         <item quantity="one">%d number found</item>
         <item quantity="other">%d numbers found</item>
     </plurals>
-    <string name="process_numbers">Open in WhatsApp</string>
 
-    <!-- Call Logs Fragment -->
+    <!-- Call Logs tab -->
     <string name="call_logs_subtitle">Open WhatsApp chat with your recent calls</string>
-    <string name="chat">Chat</string>
     <!-- Below the filter chips; read out by screen readers when it changes. %d is how many calls the list shows. -->
     <plurals name="call_logs_count">
         <item quantity="one">%d call</item>
@@ -66,7 +79,8 @@
     <!-- Read by screen readers for the loading indicator. -->
     <string name="call_logs_loading">Loading recent calls</string>
 
-    <!-- Call Log Filters -->
+    <!-- Filter chips above the call list. Each one on narrows the list: Incoming and Missed by call
+         type, Non-contacts to numbers not saved in contacts. -->
     <string name="filter_incoming">Incoming</string>
     <string name="filter_missed">Missed</string>
     <string name="filter_non_contacts">Non-contacts</string>
@@ -139,6 +153,7 @@
     <string name="call_logs_no_telephony_text">To start a chat, type or paste a number in the other tabs.</string>
     <string name="call_logs_error_title">Couldn\'t load recent calls</string>
     <string name="call_logs_error_text">Something went wrong reading the call log.</string>
+    <!-- Button that reads the call log again after an error. -->
     <string name="try_again">Try again</string>
 
     <!-- Validation Errors -->
@@ -149,7 +164,10 @@
     <!-- Opening WhatsApp -->
     <string name="error_whatsapp_not_installed">WhatsApp is not installed on your device</string>
     <string name="error_opening_whatsapp">Error opening WhatsApp</string>
+    <!-- Title of the dialog that asks whether to use WhatsApp or WhatsApp Business, which are
+         listed below it. -->
     <string name="choose_whatsapp_title">Open chat in</string>
+    <!-- Checkbox in that dialog: skip the question next time. -->
     <string name="remember_my_choice">Remember my choice</string>
     <string name="whatsapp_app_name" translatable="false">WhatsApp</string>
     <string name="whatsapp_business_app_name" translatable="false">WhatsApp Business</string>
@@ -169,9 +187,12 @@
          %1$s is the country's name, e.g. "India". -->
     <string name="country_label_description">Country: %1$s</string>
 
-    <!-- App shortcuts -->
+    <!-- App shortcuts, shown when the app icon is long-pressed. The short labels also name a
+         shortcut pinned to the home screen, so keep them to about 10 characters. -->
+    <!-- Opens a WhatsApp chat with the phone number on the clipboard. -->
     <string name="shortcut_paste_short">Paste &amp; Open</string>
     <string name="shortcut_paste_long">Paste a number and open WhatsApp</string>
+    <!-- Opens the app on the Call Logs tab; use the same words as that tab. -->
     <string name="shortcut_call_logs_short">Call Logs</string>
     <string name="shortcut_call_logs_long">Open recent calls</string>
 </resources>

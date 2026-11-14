@@ -22,6 +22,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -63,6 +65,10 @@ class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setAccessibilityPaneTitle(view, getString(R.string.nav_call_logs))
+        binding.recyclerView.addOnLayoutChangeListener { list, left, _, right, _, oldLeft, _, oldRight, _ ->
+            if (right - left != oldRight - oldLeft) centreRows(list)
+        }
         val adapter = CallLogsAdapter(this).also { adapter = it }
         binding.recyclerView.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
@@ -70,6 +76,16 @@ class CallLogsFragment : Fragment(), CallLogsAdapter.Callbacks {
                 viewModel.state.collect { adapter.submit(CallLogsEntry.forState(it)) }
             }
         }
+    }
+
+    /**
+     * Pads the list at the sides so its rows keep to a centred column no wider than
+     * content_max_width, like the other tabs. The list itself spans the window, so it scrolls
+     * from anywhere across it.
+     */
+    private fun centreRows(list: View) {
+        val side = maxOf(0, (list.width - resources.getDimensionPixelSize(R.dimen.content_max_width)) / 2)
+        if (list.paddingLeft != side || list.paddingRight != side) list.updatePadding(left = side, right = side)
     }
 
     override fun onResume() {
