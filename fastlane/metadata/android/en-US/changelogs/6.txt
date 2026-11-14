@@ -1,0 +1,7 @@
+- Open a chat from shared text, a phone link, or a number you select in any app
+- Paste & Open from a home screen shortcut or a Quick Settings tile
+- Finds every number in pasted text and lets you pick one
+- Choose between WhatsApp and WhatsApp Business
+- Call logs: grouped calls, Call/Copy/Save actions, updates while open
+- No longer asks for the contacts permission
+- Better accessibility, large text, right-to-left layouts and tablets; themed icon

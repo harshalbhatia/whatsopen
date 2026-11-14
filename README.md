@@ -2,25 +2,26 @@
 
 Open WhatsApp chats with any phone number — even numbers not in your contacts.
 
-Android app that lets you start a WhatsApp conversation by entering a phone number, pasting from the clipboard, or picking from your recent call log. No need to save the contact first.
+Android app that lets you start a WhatsApp conversation by typing a phone number, pasting text that contains one, or picking a recent call. No need to save the contact first.
 
 ## Features
 
-- Enter a phone number with country code and open WhatsApp directly
-- Detect and use phone numbers from clipboard
-- Browse recent call log entries and open WhatsApp for any of them
-- Filter call log by call type and WhatsApp contact status
-- Material 3 design, light/dark theme
+- Type a number and open the chat; your country code is filled in
+- Paste text with phone numbers in it and pick the one to open
+- Open a chat with a recent caller, with filters for incoming, missed and non-contact calls
+- Share text, tap a `tel:` link, or select a number in any app to open its chat
+- Paste & Open from a home screen shortcut or a Quick Settings tile
+- Works with WhatsApp and WhatsApp Business
+- Material You colours, dark theme and a themed icon
 
 ## Requirements
 
 - Android 7.0 (API 24) or higher
-- WhatsApp installed
+- WhatsApp or WhatsApp Business installed
 
 ## Permissions
 
-- `READ_CALL_LOG` — to show recent calls
-- `READ_CONTACTS` — to display contact names alongside numbers
+- `READ_CALL_LOG` (optional) — to show recent calls. Names come from the call log's own cache; contacts aren't read.
 
 No network access. No analytics. No tracking.
 
@@ -30,7 +31,13 @@ No network access. No analytics. No tracking.
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/app-debug.apk`
+APK output: `app/build/outputs/apk/debug/app-debug.apk`. Debug builds install as "WhatsOpen Debug" (`com.harshalbhatia.whatsopen.debug`), beside the release app.
+
+Tests:
+
+```sh
+./gradlew lintDebug testDebugUnitTest
+```
 
 ## License
 
