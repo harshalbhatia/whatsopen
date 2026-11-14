@@ -42,18 +42,18 @@ class MainActivity : AppCompatActivity() {
             "call_logs" -> binding.bottomNavigation.selectedItemId = R.id.navigation_call_logs
         }
 
-        val number = IncomingIntentParser.extractPhoneNumber(intent)
+        val region = DefaultRegion.get(this)
+        val number = IncomingIntentParser.extractPhoneNumber(intent, region)
         if (number != null) {
-            WhatsAppLauncher.openChat(this, number)
+            WhatsAppLauncher.openChat(this, number, region)
             return
         }
 
-        if (intent.action == Intent.ACTION_SEND) {
-            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            if (!sharedText.isNullOrBlank()) {
-                PendingShare.text = sharedText
-                binding.bottomNavigation.selectedItemId = R.id.navigation_clipboard
-            }
+        // Shared text without exactly one number goes to the Clipboard tab for the user to confirm.
+        val sharedText = IncomingIntentParser.sharedText(intent)
+        if (sharedText != null) {
+            PendingShare.text = sharedText
+            binding.bottomNavigation.selectedItemId = R.id.navigation_clipboard
         }
     }
 

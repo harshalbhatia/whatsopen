@@ -49,6 +49,15 @@
     <string name="error_country_code_required">Enter a country code</string>
     <string name="error_phone_required">Enter a phone number</string>
     <string name="error_no_valid_numbers">No valid phone numbers found</string>
+    <string name="error_invalid_phone_number">Not a valid phone number</string>
+
+    <!-- Opening WhatsApp -->
+    <string name="error_whatsapp_not_installed">WhatsApp is not installed on your device</string>
+    <string name="error_opening_whatsapp">Error opening WhatsApp</string>
+    <string name="choose_whatsapp_title">Open chat in</string>
+    <string name="remember_my_choice">Remember my choice</string>
+    <string name="whatsapp_app_name" translatable="false">WhatsApp</string>
+    <string name="whatsapp_business_app_name" translatable="false">WhatsApp Business</string>
 
     <!-- Accessibility -->
     <string name="country_info_description">Country information for entered code</string>

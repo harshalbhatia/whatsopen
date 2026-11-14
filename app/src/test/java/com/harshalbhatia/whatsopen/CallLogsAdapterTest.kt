@@ -71,14 +71,15 @@ class CallLogsAdapterTest {
     }
 
     @Test
-    fun `card click invokes callback with raw number`() {
+    fun `card click passes the raw number for the launcher to normalize with the region`() {
         var captured: String? = null
         val holder = bindItem(
-            CallLogItem("+14155551234", 1_700_000_000_000L, CallLog.Calls.OUTGOING_TYPE, false, null)
+            CallLogItem("4155552671", 1_700_000_000_000L, CallLog.Calls.OUTGOING_TYPE, false, null)
         ) { captured = it }
         val binding = com.harshalbhatia.whatsopen.databinding.ItemCallLogBinding.bind(holder.itemView)
         binding.callLogCard.performClick()
-        assertEquals("+14155551234", captured)
+        assertEquals("4155552671", captured)
+        assertEquals("+14155552671", PhoneNumbers.normalize(captured!!, "US"))
     }
 
     @Test

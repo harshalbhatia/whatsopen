@@ -38,15 +38,16 @@ class ClipboardFragment : Fragment() {
         binding.processNumbersButton.setOnClickListener {
             binding.numbersInputLayout.error = null
 
-            val input = binding.numbersInput.text.toString().trim()
-            val numbers = PhoneNumberUtils.parsePhoneNumbers(input)
+            val input = binding.numbersInput.text.toString()
+            val region = DefaultRegion.get(requireContext())
+            val numbers = PhoneNumbers.extract(input, region)
 
             if (numbers.isEmpty()) {
                 binding.numbersInputLayout.error = getString(R.string.error_no_valid_numbers)
                 return@setOnClickListener
             }
 
-            WhatsAppLauncher.openChat(requireContext(), numbers.first())
+            WhatsAppLauncher.openChat(requireContext(), numbers.first(), region)
         }
     }
 
@@ -65,7 +66,7 @@ class ClipboardFragment : Fragment() {
         }
 
         val clipText = readClipboardText() ?: return
-        if (PhoneNumberUtils.parsePhoneNumbers(clipText).isNotEmpty()) {
+        if (PhoneNumbers.extract(clipText, DefaultRegion.get(requireContext())).isNotEmpty()) {
             binding.numbersInput.setText(clipText)
         }
     }
