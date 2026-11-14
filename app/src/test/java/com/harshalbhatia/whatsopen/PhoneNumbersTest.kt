@@ -25,6 +25,15 @@ class PhoneNumbersTest {
     }
 
     @Test
+    fun `normalize rejects plus 1 number that isn't 10 digits after the code`() {
+        // The trunk "1" typed again after +1.
+        assertNull(PhoneNumbers.normalize("+1 1 555 123 4567", "US"))
+        assertNull(PhoneNumbers.normalize("+1 555 123 456", "US"))
+        // Area codes never start with 0 or 1.
+        assertNull(PhoneNumbers.normalize("+1 055 123 4567", "US"))
+    }
+
+    @Test
     fun `normalize accepts fictional 555 number written with plus`() {
         assertEquals("+15551234567", PhoneNumbers.normalize("+1 555-123-4567", "US"))
     }
@@ -258,6 +267,14 @@ class PhoneNumbersTest {
         assertEquals(
             listOf("+14155552671"),
             PhoneNumbers.extract("Call +1 415 555 2671 24 hours a day", "US")
+        )
+    }
+
+    @Test
+    fun `extract stops a fictional plus 1 number at 10 digits`() {
+        assertEquals(
+            listOf("+15551234567"),
+            PhoneNumbers.extract("Call +1 555 123 4567 24 hours a day", "US")
         )
     }
 

@@ -34,13 +34,13 @@ sealed interface LaunchResult {
     /** Both apps are installed: a dialog asks which one to use, and opens the chat itself. */
     data object ChoosingApp : LaunchResult
 
-    /** The number isn't valid. Nothing was opened; a toast said so. */
+    /** The number isn't valid. Nothing was opened; the user was told (see [WhatsAppLauncher.openChat]). */
     data object InvalidNumber : LaunchResult
 
-    /** Neither app is installed and enabled. A toast said so. */
+    /** Neither app is installed and enabled. The user was told. */
     data object NotInstalled : LaunchResult
 
-    /** Starting WhatsApp failed. A toast said so. */
+    /** Starting WhatsApp failed. The user was told. */
     data object Failed : LaunchResult
 
     /** Ignored because a chat was opened moments ago (a double tap). */
@@ -70,7 +70,11 @@ object WhatsAppLauncher {
      *
      * Uses the remembered app if it's available. Otherwise, when both WhatsApp and
      * WhatsApp Business are available and [context] is an Activity, asks which to use;
-     * without an Activity it uses WhatsApp. Shows a toast for every failure.
+     * without an Activity it uses WhatsApp.
+     *
+     * Every failure is reported to the user: as a toast, or, when [onError] is given, by
+     * passing the message's string resource to it instead, for a screen to show in its own UI.
+     * That includes failing to start the app picked in the chooser, which happens later.
      *
      * When the result is [LaunchResult.ChoosingApp], [onChooserClosed] runs once the chooser
      * closes, whether an app was picked (after it was started) or not, unless the Activity is
@@ -82,11 +86,13 @@ object WhatsAppLauncher {
         regionIso: String? = null,
         message: String? = null,
         onChooserClosed: (() -> Unit)? = null,
+        onError: ((message: Int) -> Unit)? = null,
     ): LaunchResult {
+        val report = onError ?: { toast(context, it) }
         val region = DefaultRegion.cleanIso(regionIso) ?: DefaultRegion.get(context)
         val e164 = PhoneNumbers.normalize(phoneNumber, region)
         if (e164 == null) {
-            toast(context, R.string.error_invalid_phone_number)
+            report(R.string.error_invalid_phone_number)
             return LaunchResult.InvalidNumber
         }
 
@@ -98,15 +104,15 @@ object WhatsAppLauncher {
         val uri = buildChatUri(e164, message)
         return when (val choice = chooseApps(availableApps(context), rememberedApp(context), activity != null)) {
             AppChoice.NoneAvailable -> {
-                toast(context, R.string.error_whatsapp_not_installed)
+                report(R.string.error_whatsapp_not_installed)
                 LaunchResult.NotInstalled
             }
-            is AppChoice.Use -> launch(context, uri, choice.apps)
+            is AppChoice.Use -> launch(context, uri, choice.apps, report)
             is AppChoice.Ask ->
-                if (activity != null && showChooser(activity, uri, choice.apps, onChooserClosed)) {
+                if (activity != null && showChooser(activity, uri, choice.apps, onChooserClosed, report)) {
                     LaunchResult.ChoosingApp
                 } else {
-                    launch(context, uri, choice.apps)
+                    launch(context, uri, choice.apps, report)
                 }
         }.also { result ->
             // Only a chat that opened (or a chooser that's showing) blocks a quick second tap;
@@ -177,8 +183,13 @@ object WhatsAppLauncher {
             false
         }
 
-    /** Starts the first app in [apps] that can open [uri]. */
-    private fun launch(context: Context, uri: Uri, apps: List<WhatsAppApp>): LaunchResult {
+    /** Starts the first app in [apps] that can open [uri]. Passes the error message to [report] if none can. */
+    private fun launch(
+        context: Context,
+        uri: Uri,
+        apps: List<WhatsAppApp>,
+        report: (message: Int) -> Unit,
+    ): LaunchResult {
         val newTask = context.findActivity() == null
         for (app in apps) {
             val intent = Intent(Intent.ACTION_VIEW, uri).setPackage(app.packageName)
@@ -194,7 +205,7 @@ object WhatsAppLauncher {
                 break
             }
         }
-        toast(context, R.string.error_opening_whatsapp)
+        report(R.string.error_opening_whatsapp)
         return LaunchResult.Failed
     }
 
@@ -204,6 +215,7 @@ object WhatsAppLauncher {
         uri: Uri,
         apps: List<WhatsAppApp>,
         onClosed: (() -> Unit)?,
+        report: (message: Int) -> Unit,
     ): Boolean {
         return try {
             val builder = MaterialAlertDialogBuilder(activity)
@@ -216,7 +228,7 @@ object WhatsAppLauncher {
                     if (binding.rememberChoice.isChecked) {
                         prefs(activity).edit().putString(KEY_REMEMBERED_APP, app.packageName).apply()
                     }
-                    launch(activity, uri, listOf(app) + (apps - app))
+                    launch(activity, uri, listOf(app) + (apps - app), report)
                 }
                 .setView(binding.root)
                 .setNegativeButton(android.R.string.cancel, null)

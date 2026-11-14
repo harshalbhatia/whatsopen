@@ -2,6 +2,8 @@
 <resources>
     <!-- Screen layout -->
     <dimen name="screen_padding">24dp</dimen>
+    <!-- Widest a tab's content gets on tablets, foldables and in landscape; see Widget.WhatsOpen.ContentColumn. -->
+    <dimen name="content_max_width">600dp</dimen>
 
     <!-- Spacing -->
     <dimen name="spacing_title_subtitle">8dp</dimen>
@@ -9,9 +11,9 @@
     <dimen name="spacing_between_inputs">16dp</dimen>
     <dimen name="spacing_input_button">24dp</dimen>
 
-    <!-- Component sizes -->
-    <dimen name="button_height">56dp</dimen>
-    <dimen name="input_height">56dp</dimen>
+    <!-- Component sizes. Minimums only, so text never clips at large font sizes. -->
+    <dimen name="button_min_height">56dp</dimen>
+    <dimen name="country_code_field_width">136dp</dimen>
 
     <!-- Corner radii -->
     <dimen name="corner_radius_input">8dp</dimen>

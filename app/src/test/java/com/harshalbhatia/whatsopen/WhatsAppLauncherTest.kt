@@ -211,6 +211,33 @@ class WhatsAppLauncherTest {
     }
 
     @Test
+    fun `onError gets every failure instead of a toast`() {
+        val errors = mutableListOf<Int>()
+        val failing = object : ContextWrapper(app) {
+            override fun startActivity(intent: Intent) = throw ActivityNotFoundException()
+        }
+
+        assertEquals(LaunchResult.InvalidNumber, WhatsAppLauncher.openChat(app, "12", "US", onError = { errors += it }))
+        assertEquals(LaunchResult.NotInstalled, WhatsAppLauncher.openChat(app, "+14155552671", "US", onError = { errors += it }))
+        install(WhatsAppApp.CONSUMER)
+        assertEquals(LaunchResult.Failed, WhatsAppLauncher.openChat(failing, "+14155552671", "US", onError = { errors += it }))
+
+        assertEquals(
+            listOf(R.string.error_invalid_phone_number, R.string.error_whatsapp_not_installed, R.string.error_opening_whatsapp),
+            errors,
+        )
+        assertNull(latestToast())
+    }
+
+    @Test
+    fun `onError is not called when the chat opens`() {
+        install(WhatsAppApp.CONSUMER)
+        var called = false
+        assertEquals(LaunchResult.Launched, WhatsAppLauncher.openChat(app, "+14155552671", "US", onError = { called = true }))
+        assertFalse(called)
+    }
+
+    @Test
     fun `a failed launch can be retried straight away`() {
         install(WhatsAppApp.CONSUMER)
         var fail = true
